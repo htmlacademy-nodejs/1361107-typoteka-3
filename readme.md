@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
 * Студент: [Роман Белов](https://up.htmlacademy.ru/nodejs/3/user/1361107).
-* Наставник: `Неизвестно`.
+* Наставник: `Bodya Tsap`.
 
 ---
 
