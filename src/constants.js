@@ -21,6 +21,12 @@ exports.HELP_MESSAGE = `
   --generate <count>    формирует файл mocks.json
 `;
 
+exports.DataFileName = {
+  titles: `data/titles.txt`,
+  categories: `data/categories.txt`,
+  sentences: `data/sentences.txt`,
+};
+
 exports.DEFAULT_PUBLICATION_AMOUNT = 1;
 
 exports.MAX_PUBLICATION_AMOUNT = 1000;
