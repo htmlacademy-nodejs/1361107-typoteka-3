@@ -40,11 +40,14 @@ exports.MOCKS_FILE_NAME = `mocks.json`;
 
 exports.DEFAULT_API_PORT = 3000;
 
+exports.DEFAULT_RENDER_PORT = 8080;
+
 exports.Route = {
   ROOT: `/`
 };
 
 exports.NOT_FOUND_MESSAGE = `Ничего не найдено`;
+exports.SERVER_ERROR_MESSAGE = `Ошибка на стороне сервера`;
 
 exports.HttpCode = {
   OK: 200,
