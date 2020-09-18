@@ -57,3 +57,7 @@ exports.HttpCode = {
   UNAUTHORIZED: 401,
 };
 
+exports.PUBLIC_DIR = `public`;
+
+exports.TEMPLATES_DIR = `templates`;
+
