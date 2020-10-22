@@ -26,6 +26,7 @@ exports.DataFileName = {
   titles: `data/titles.txt`,
   categories: `data/categories.txt`,
   sentences: `data/sentences.txt`,
+  comments: `data/comments.txt`
 };
 
 exports.DEFAULT_PUBLICATION_AMOUNT = 1;
@@ -61,3 +62,9 @@ exports.PUBLIC_DIR = `public`;
 
 exports.TEMPLATES_DIR = `templates`;
 
+exports.MAX_ID_LENGTH = 6;
+
+exports.CommentRestrict = {
+  MAX_SENTENCES_AMOUNT: 3,
+  MAX_COMMENTS_AMOUNT: 5,
+};
