@@ -6,8 +6,7 @@ const {
   DEFAULT_RENDER_PORT,
   ExitCode,
   HttpCode,
-  PUBLIC_DIR,
-  TEMPLATES_DIR,
+  DirPath,
 } = require(`../constants`);
 const mainRouter = require(`./routes/main-routes`);
 const registerRouter = require(`./routes/register-routes`);
@@ -20,8 +19,8 @@ const chalk = require(`chalk`);
 
 const app = express();
 
-app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
-app.set(`views`, path.resolve(__dirname, TEMPLATES_DIR));
+app.use(express.static(path.resolve(__dirname, DirPath.PUBLIC)));
+app.set(`views`, path.resolve(__dirname, DirPath.TEMPLATES));
 app.set(`view engine`, `pug`);
 
 app.use(`/`, mainRouter);
@@ -35,7 +34,7 @@ app.use(`/categories`, categoriesRouter);
 app.use((req, res) => res.status(HttpCode.NOT_FOUND).render(`errors/400`));
 app.use((err, req, res) => {
   console.trace(err);
-  res.status(HttpCode.INTERNAL_SERVER_ERROR).render(`errors/500`);
+  return res.status(HttpCode.INTERNAL_SERVER_ERROR).render(`errors/500`);
 });
 
 app.listen(DEFAULT_RENDER_PORT, (err) => {

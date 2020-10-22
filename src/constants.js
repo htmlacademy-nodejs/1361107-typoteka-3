@@ -26,7 +26,7 @@ exports.DataFileName = {
   titles: `data/titles.txt`,
   categories: `data/categories.txt`,
   sentences: `data/sentences.txt`,
-  comments: `data/comments.txt`
+  comments: `data/comments.txt`,
 };
 
 exports.DEFAULT_PUBLICATION_AMOUNT = 1;
@@ -44,7 +44,7 @@ exports.DEFAULT_API_PORT = 3000;
 exports.DEFAULT_RENDER_PORT = 8080;
 
 exports.Route = {
-  ROOT: `/`
+  ROOT: `/`,
 };
 
 exports.NOT_FOUND_MESSAGE = `Ничего не найдено`;
@@ -52,10 +52,12 @@ exports.SERVER_ERROR_MESSAGE = `Ошибка на стороне сервера`
 
 exports.HttpCode = {
   OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
-  FORBIDDEN: 403,
-  UNAUTHORIZED: 401,
 };
 
 exports.PUBLIC_DIR = `public`;
@@ -67,4 +69,18 @@ exports.MAX_ID_LENGTH = 6;
 exports.CommentRestrict = {
   MAX_SENTENCES_AMOUNT: 3,
   MAX_COMMENTS_AMOUNT: 5,
+};
+
+exports.ResponceMessage = {
+  DATA_NOT_FOUND: `Данные не найдены`,
+  API_ROUTE_NOT_FOUND: `Маршрут не найден`,
+  PAGE_NOT_FOUND: `Страница не найдена`,
+  BAD_REQUEST: `Получены неверные данные`,
+};
+
+exports.API_PREFIX = `/api`;
+
+exports.DirPath = {
+  PUBLIC: `public`,
+  TEMPLATES: `templates`,
 };
