@@ -6,15 +6,16 @@ const {
   ExitCode,
   DEFAULT_API_PORT,
   HttpCode,
-  NOT_FOUND_MESSAGE,
+  ResponceMessage,
+  API_PREFIX,
 } = require(`../../../constants`);
-const articlesRouter = require(`./routes/articles-routes`);
+const routes = require(`./api`);
 
 const app = express();
 
 app.use(express.json());
-app.use(`/articles`, articlesRouter);
-app.use((req, res) => res.status(HttpCode.NOT_FOUND).send(NOT_FOUND_MESSAGE));
+app.use(API_PREFIX, routes);
+app.use((req, res) => res.status(HttpCode.NOT_FOUND).send(ResponceMessage.API_ROUTE_NOT_FOUND));
 
 module.exports = {
   name: `--server`,

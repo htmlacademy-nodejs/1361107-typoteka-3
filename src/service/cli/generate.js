@@ -9,8 +9,11 @@ const {
   MAX_PUBLICATION_AMOUNT,
   DEFAULT_PUBLICATION_AMOUNT,
   DataFileName,
+  MAX_ID_LENGTH,
+  CommentRestrict,
 } = require(`../../constants`);
 const chalk = require(`chalk`);
+const {nanoid} = require(`nanoid`);
 const {getRandomInt, shuffle, readContent} = require(`../../utils`);
 
 const getCreatedDate = () => {
@@ -26,11 +29,25 @@ const getCreatedDate = () => {
   return new Date(createdDateMilliseconds).toLocaleString();
 };
 
+const generateCommentList = (commentsAmount, comments) => {
+  return Array(commentsAmount)
+    .fill({}, 0, commentsAmount)
+    .map(() => {
+      return {
+        id: nanoid(MAX_ID_LENGTH),
+        text: shuffle(comments)
+          .slice(0, getRandomInt(1, CommentRestrict.MAX_SENTENCES_AMOUNT))
+          .join(` `),
+      };
+    });
+};
+
 const generateAd = (amount, data) => {
   return Array(amount)
     .fill(0, 0, amount)
     .map(() => {
       return {
+        id: nanoid(MAX_ID_LENGTH),
         title: data[getRandomInt(0, data.titles.length - 1)],
         announce: shuffle(data.sentences)
           .slice(0, getRandomInt(1, MAX_ANNOUNCE_SIZE))
@@ -43,6 +60,10 @@ const generateAd = (amount, data) => {
             0,
             getRandomInt(1, data.categories.length)
         ),
+        comments: generateCommentList(
+            getRandomInt(1, CommentRestrict.MAX_COMMENTS_AMOUNT),
+            data.comments
+        ),
       };
     });
 };
@@ -52,7 +73,7 @@ module.exports = {
   run: async (args) => {
     let count = Number.parseInt(args[0], 10);
 
-    const [titles, categories, sentences] = await Promise.all(
+    const [titles, categories, sentences, comments] = await Promise.all(
         Object.values(DataFileName).map((fileName) => readContent(fileName))
     );
 
@@ -63,7 +84,7 @@ module.exports = {
 
     count = !count || count <= 0 ? DEFAULT_PUBLICATION_AMOUNT : count;
 
-    const data = JSON.stringify(generateAd(count, {titles, categories, sentences}));
+    const data = JSON.stringify(generateAd(count, {titles, categories, sentences, comments}));
 
     try {
       await fs.writeFile(MOCKS_FILE_NAME, data);
