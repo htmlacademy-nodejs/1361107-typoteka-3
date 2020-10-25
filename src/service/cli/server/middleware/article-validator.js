@@ -1,13 +1,8 @@
 "use strict";
 
-const {HttpCode, ResponceMessage} = require(`../../../../constants`);
+const { HttpCode, ResponseMessage } = require(`../../../../constants`);
 
-const articleRequiredKeys = [
-  `announce`,
-  `createdDate`,
-  `сategory`,
-  `fullText`,
-];
+const articleRequiredKeys = [`announce`, `createdDate`, `сategory`, `fullText`];
 
 module.exports = (req, res, next) => {
   req.body = articleRequiredKeys.reduce((acc, key) => {
@@ -17,10 +12,12 @@ module.exports = (req, res, next) => {
     return acc;
   }, {});
   const articleKeys = Object.keys(req.body);
-  const isKeysMatch = articleRequiredKeys.every((key) => articleKeys.includes(key));
+  const isKeysMatch = articleRequiredKeys.every((key) =>
+    articleKeys.includes(key)
+  );
 
   if (!isKeysMatch) {
-    return res.status(HttpCode.BAD_REQUEST).send(ResponceMessage.BAD_REQUEST);
+    return res.status(HttpCode.BAD_REQUEST).send(ResponseMessage.BAD_REQUEST);
   }
 
   return next();

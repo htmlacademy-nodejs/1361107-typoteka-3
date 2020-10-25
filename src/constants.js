@@ -53,6 +53,7 @@ exports.SERVER_ERROR_MESSAGE = `Ошибка на стороне сервера`
 exports.HttpCode = {
   OK: 200,
   CREATED: 201,
+  NO_CONTENT: 204,
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
@@ -71,7 +72,7 @@ exports.CommentRestrict = {
   MAX_COMMENTS_AMOUNT: 5,
 };
 
-exports.ResponceMessage = {
+exports.ResponseMessage = {
   DATA_NOT_FOUND: `Данные не найдены`,
   API_ROUTE_NOT_FOUND: `Маршрут не найден`,
   PAGE_NOT_FOUND: `Страница не найдена`,

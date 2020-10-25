@@ -6,9 +6,9 @@ const articleValidator = require(`../middleware/article-validator`);
 const commentValidator = require(`../middleware/comment-validator`);
 const isArticleExists = require(`../middleware/is-article-exists`);
 
-const route = new Router();
-
 module.exports = (app, articlesService, commentsService) => {
+  const route = new Router();
+
   route.get(`/`, (req, res) => {
     const articles = articlesService.findAll();
     return res.status(HttpCode.OK).json(articles);
@@ -26,7 +26,7 @@ module.exports = (app, articlesService, commentsService) => {
     return res.status(HttpCode.CREATED).json(newArticle);
   });
 
-  route.put(`/:articleId`, [isArticleExists(articlesService), articleValidator], (req, res) => {
+  route.put(`/:articleId`, [articleValidator, isArticleExists(articlesService)], (req, res) => {
     const {articleId} = req.params;
     const updatedArticle = articlesService.update(articleId, req.body);
 
@@ -35,9 +35,9 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.delete(`/:articleId`, isArticleExists(articlesService), (req, res) => {
     const {articleId} = req.params;
-    const deletedArticle = articlesService.delete(articleId);
+    articlesService.delete(articleId);
 
-    return res.status(HttpCode.OK).json(deletedArticle);
+    return res.status(HttpCode.NO_CONTENT);
   });
 
   route.get(`/:articleId/comments`, isArticleExists(articlesService), (req, res) => {
@@ -52,16 +52,12 @@ module.exports = (app, articlesService, commentsService) => {
     const {article} = res.locals;
     const {commentId} = req.params;
 
-    const deletedComment = commentsService.delete(article, commentId);
+    commentsService.delete(article, commentId);
 
-    if (!deletedComment) {
-      return res.status(HttpCode.NOT_FOUND).send(`Комментарий с id ${commentId} не найден`);
-    }
-
-    return res.status(HttpCode.OK).json(deletedComment);
+    return res.status(HttpCode.NO_CONTENT);
   });
 
-  route.post(`/:articleId/comments`, [isArticleExists(articlesService), commentValidator], (req, res) => {
+  route.post(`/:articleId/comments`, [commentValidator, isArticleExists(articlesService)], (req, res) => {
     const {article} = res.locals;
     const newComment = commentsService.create(article, req.body);
 
