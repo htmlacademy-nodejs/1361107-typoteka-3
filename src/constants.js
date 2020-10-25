@@ -85,3 +85,8 @@ exports.DirPath = {
   PUBLIC: `public`,
   TEMPLATES: `templates`,
 };
+
+module.exports.Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
