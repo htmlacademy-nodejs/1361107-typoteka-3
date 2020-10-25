@@ -33,11 +33,11 @@ module.exports = (app, articlesService, commentsService) => {
     return res.status(HttpCode.OK).json(updatedArticle);
   });
 
-  route.delete(`/:articleId`, isArticleExists(articlesService), (req, res) => {
+  route.delete(`/:articleId`, (req, res) => {
     const {articleId} = req.params;
     articlesService.delete(articleId);
 
-    return res.status(HttpCode.NO_CONTENT);
+    return res.status(HttpCode.NO_CONTENT).json({});
   });
 
   route.get(`/:articleId/comments`, isArticleExists(articlesService), (req, res) => {
@@ -54,7 +54,7 @@ module.exports = (app, articlesService, commentsService) => {
 
     commentsService.delete(article, commentId);
 
-    return res.status(HttpCode.NO_CONTENT);
+    return res.status(HttpCode.NO_CONTENT).json({});
   });
 
   route.post(`/:articleId/comments`, [commentValidator, isArticleExists(articlesService)], (req, res) => {
