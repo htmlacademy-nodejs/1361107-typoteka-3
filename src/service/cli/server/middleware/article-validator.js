@@ -1,6 +1,6 @@
 "use strict";
 
-const { HttpCode, ResponseMessage } = require(`../../../../constants`);
+const {HttpCode, ResponseMessage} = require(`../../../../constants`);
 
 const articleRequiredKeys = [`announce`, `createdDate`, `сategory`, `fullText`];
 
