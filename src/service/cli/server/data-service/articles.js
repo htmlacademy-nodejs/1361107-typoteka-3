@@ -35,7 +35,11 @@ class ArticlesService {
   delete(id) {
     const deletingArticleIndex = this._articles.findIndex((article) => article.id === id);
 
-    return this._articles.splice(deletingArticleIndex, 1);
+    if (deletingArticleIndex === -1) {
+      return;
+    }
+
+    this._articles.splice(deletingArticleIndex, 1);
   }
 }
 

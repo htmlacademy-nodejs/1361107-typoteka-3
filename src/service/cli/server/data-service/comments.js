@@ -11,7 +11,11 @@ class CommentsService {
   delete(article, commentId) {
     const commentIndex = article.comments.findIndex((comment) => comment.id === commentId);
 
-    return commentIndex === -1 ? null : article.comments.splice(commentIndex, 1);
+    if (commentIndex === -1) {
+      return;
+    }
+
+    article.comments.splice(commentIndex, 1);
   }
 
   create(article, commentData) {
