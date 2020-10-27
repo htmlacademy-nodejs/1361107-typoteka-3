@@ -33,9 +33,11 @@ exports.DEFAULT_PUBLICATION_AMOUNT = 1;
 
 exports.MAX_PUBLICATION_AMOUNT = 1000;
 
-exports.MAX_ANNOUNCE_SIZE = 5;
-
-exports.MAX_FULL_DESCR_SIZE = 30;
+exports.ArticleRestrict = {
+  MAX_ANNOUNCE_SIZE: 5,
+  MAX_FULL_DESCR_SIZE: 30,
+  MAX_CATEGORY_AMOUND: 5
+};
 
 exports.MOCKS_FILE_NAME = `mocks.json`;
 

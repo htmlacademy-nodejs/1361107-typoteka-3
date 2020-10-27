@@ -4,13 +4,12 @@ const fs = require(`fs`).promises;
 const {
   ExitCode,
   MOCKS_FILE_NAME,
-  MAX_ANNOUNCE_SIZE,
-  MAX_FULL_DESCR_SIZE,
   MAX_PUBLICATION_AMOUNT,
   DEFAULT_PUBLICATION_AMOUNT,
   DataFileName,
   MAX_ID_LENGTH,
   CommentRestrict,
+  ArticleRestrict,
 } = require(`../../constants`);
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
@@ -50,15 +49,15 @@ const generateAd = (amount, data) => {
         id: nanoid(MAX_ID_LENGTH),
         title: data.titles[getRandomInt(0, data.titles.length - 1)],
         announce: shuffle(data.sentences)
-          .slice(0, getRandomInt(1, MAX_ANNOUNCE_SIZE))
+          .slice(0, getRandomInt(1, ArticleRestrict.MAX_ANNOUNCE_SIZE))
           .join(` `),
         fullText: shuffle(data.sentences)
-          .slice(0, getRandomInt(1, MAX_FULL_DESCR_SIZE))
+          .slice(0, getRandomInt(1, ArticleRestrict.MAX_FULL_DESCR_SIZE))
           .join(` `),
         createdDate: getCreatedDate(),
         сategory: shuffle(data.categories).slice(
             0,
-            getRandomInt(1, data.categories.length)
+            getRandomInt(1, ArticleRestrict.MAX_CATEGORY_AMOUND)
         ),
         comments: generateCommentList(
             getRandomInt(1, CommentRestrict.MAX_COMMENTS_AMOUNT),
