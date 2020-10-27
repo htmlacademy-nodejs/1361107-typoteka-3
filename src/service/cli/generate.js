@@ -48,7 +48,7 @@ const generateAd = (amount, data) => {
     .map(() => {
       return {
         id: nanoid(MAX_ID_LENGTH),
-        title: data[getRandomInt(0, data.titles.length - 1)],
+        title: data.titles[getRandomInt(0, data.titles.length - 1)],
         announce: shuffle(data.sentences)
           .slice(0, getRandomInt(1, MAX_ANNOUNCE_SIZE))
           .join(` `),
