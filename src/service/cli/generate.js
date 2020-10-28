@@ -13,7 +13,7 @@ const {
 } = require(`../../constants`);
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
-const {getRandomInt, shuffle, readContent} = require(`../../utils`);
+const {getRandomInt, shuffle, readContent, formatDate} = require(`../../utils`);
 
 const getCreatedDate = () => {
   const currentDate = new Date();
@@ -25,7 +25,9 @@ const getCreatedDate = () => {
       maxMilliseconds
   );
 
-  return new Date(createdDateMilliseconds).toLocaleString();
+  const date = new Date(createdDateMilliseconds);
+
+  return formatDate(date);
 };
 
 const generateCommentList = (commentsAmount, comments) => {
