@@ -5,8 +5,16 @@ block content
     section.search-page
       .search-page__wrapper
         h1 Поиск
-        .search.search-page__form
-          form(action='#', method='get')
+        div(class={"search": true, "search-page__form": true, "search-page__wrapper--empty": results.length === 0 && search !== undefined})
+          form(action="/search", autocomplete="off", method='get')
             label
-              input(type='text', placeholder='Что ищем?')
+              input(type='text', placeholder='Что ищем?', name="search" value=search || '')
             button.search__button.button.button--transparent(type='submit') Найти
+          if results.length > 0
+            each result in results
+              .search__result
+                time.search__date(datetime='2019-03-21T20:33') #{result.createdDate}
+                a.search__link #{result.title}
+        if results.length === 0 && search !== undefined
+          p.search-page__empty Ничего не нашлось
+
