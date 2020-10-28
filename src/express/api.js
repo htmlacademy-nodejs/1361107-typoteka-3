@@ -30,7 +30,7 @@ class API {
   }
 
   getCategories() {
-    return this._load(`/category`);
+    return this._load(`/categories`);
   }
 
   createArticle(data) {
