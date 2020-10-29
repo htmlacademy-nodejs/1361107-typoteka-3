@@ -2,23 +2,32 @@
 
 const {HttpCode, ResponseMessage} = require(`../../../../constants`);
 
-const articleRequiredKeys = [`announce`, `createdDate`, `сategory`, `fullText`];
+const articleRequiredKeys = [`announce`, `createdDate`, `сategory`, `fullText`, `title`];
+const articleNonRequiredKeys = [`picture`];
 
 module.exports = (req, res, next) => {
-  req.body = articleRequiredKeys.reduce((acc, key) => {
+  let filteredData;
+
+  filteredData = articleRequiredKeys.reduce((acc, key) => {
     if (req.body[key]) {
       acc[key] = req.body[key];
     }
     return acc;
   }, {});
-  const articleKeys = Object.keys(req.body);
-  const isKeysMatch = articleRequiredKeys.every((key) =>
+  const articleKeys = Object.keys(filteredData);
+  const isRequiredKeysMatch = articleRequiredKeys.every((key) =>
     articleKeys.includes(key)
   );
 
-  if (!isKeysMatch) {
+  if (!isRequiredKeysMatch) {
     return res.status(HttpCode.BAD_REQUEST).send(ResponseMessage.BAD_REQUEST);
   }
+
+  articleNonRequiredKeys.forEach((key) => {
+    filteredData[key] = req.body[key];
+  });
+
+  req.body = filteredData;
 
   return next();
 };

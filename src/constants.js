@@ -86,6 +86,7 @@ exports.API_PREFIX = `/api`;
 exports.DirPath = {
   PUBLIC: `public`,
   TEMPLATES: `templates`,
+  UPLOAD: `upload`
 };
 
 module.exports.Env = {

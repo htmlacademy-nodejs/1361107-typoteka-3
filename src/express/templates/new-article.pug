@@ -5,7 +5,7 @@ block content
     section.modal.modal--flex
       .popup.popup--new-publication.popup--flex
         .new-publication
-          form(action='#', method='POST')
+          form(action='/articles/add', method='POST' enctype="multipart/form-data" autocomplete="off")
             .new-publication__header
               h1 Новая публикация
               .new-publication__date-form
@@ -13,7 +13,7 @@ block content
                 .new-publication__date-form-division
                   .new-publication__date-block
                     label(for='new-publication-date', aria-label='Календарь')
-                    input#new-publication-date(type='text', name='login', placeholder='21.03.2019')
+                    input#new-publication-date(type='text', name='createdDate', placeholder='21.03.2019')
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             button.popup__button.button.button--popup-close(type='button', aria-label='Закрыть окно')
               | Закрыть
@@ -22,22 +22,26 @@ block content
               .form__wrapper.form__wrapper--intro
                 .form__field
                   label
-                    input(type='text', placeholder='Заголовок', required='')
+                    input(type='text', placeholder='Заголовок', name='title' required='')
                 .form__field.form__field--post-image
                   label
                     input#image-name-field(type='text', placeholder='Фотография', readonly='')
                   .form__image-loader.form__image-loader--publication
                     label
-                      input.visually-hidden(type='file')
+                      input.visually-hidden(type='file', name='picture')
                       | Обзор
+                each category in categories
+                  .new-publication__checkbox.new-publication__checkbox--auto
+                    input(type='checkbox', value=`${category}`, name='сategory' id=`checkbox-auto-${category}` )
+                    label(for=`checkbox-auto-${category}`) #{category}
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='1', placeholder='Анонс публикации')
+                    textarea(rows='1', placeholder='Анонс публикации' name='announce')
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='1', placeholder='Полный текст публикации')
+                    textarea(rows='1', placeholder='Полный текст публикации' name='fullText')
       .modal__overlay
   script(src='/js/vendor.js')
   script(src='/js/main.js')
