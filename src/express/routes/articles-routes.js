@@ -6,6 +6,7 @@ const api = require(`../api`).getAPI();
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
+const {formatDate, getTime} = require(`../../utils`);
 
 const UPLOAD_DIR = `../upload/img/`;
 
@@ -28,7 +29,8 @@ articlesRouter.get(`/category/:id`, (req, res) =>
 );
 articlesRouter.get(`/add`, async (req, res) => {
   const categories = await api.getCategories();
-  res.render(`new-article`, {categories});
+  const currentDate = formatDate(new Date()).split(`,`)[0];
+  res.render(`new-article`, {categories, currentDate});
 });
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
@@ -45,11 +47,12 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 articlesRouter.get(`/:id`, (req, res) => res.render(`article`));
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   const {body, file} = req;
+  const currentTime = getTime(new Date());
   const articleData = {
     title: body.title,
     announce: body.announce,
     fullText: body.fullText,
-    createdDate: `18.09.2020, 06:39`,
+    createdDate: `${body.createdDate}, ${currentTime}`,
     сategory: body.сategory,
   };
   if (file) {
