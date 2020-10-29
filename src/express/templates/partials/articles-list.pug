@@ -4,7 +4,7 @@ section.main-page__list.preview
     each article in articles
       li(class={"preview__item": true, "preview__item--noimage": article.picture === undefined})
         ul.preview__breadcrumbs
-          each category in article.сategory
+          each category in article.category
             li.preview__breadcrumbs-item
               a.preview__breadcrumbs-link(href='#') #{category}
         if article.picture

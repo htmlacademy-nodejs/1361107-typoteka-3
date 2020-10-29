@@ -57,7 +57,7 @@ const generateAd = (amount, data) => {
           .slice(0, getRandomInt(1, ArticleRestrict.MAX_FULL_DESCR_SIZE))
           .join(` `),
         createdDate: getCreatedDate(),
-        сategory: shuffle(data.categories).slice(
+        category: shuffle(data.categories).slice(
             0,
             getRandomInt(1, ArticleRestrict.MAX_CATEGORY_AMOUND)
         ),
@@ -85,7 +85,9 @@ module.exports = {
 
     count = !count || count <= 0 ? DEFAULT_PUBLICATION_AMOUNT : count;
 
-    const data = JSON.stringify(generateAd(count, {titles, categories, sentences, comments}));
+    const data = JSON.stringify(
+        generateAd(count, {titles, categories, sentences, comments})
+    );
 
     try {
       await fs.writeFile(MOCKS_FILE_NAME, data);

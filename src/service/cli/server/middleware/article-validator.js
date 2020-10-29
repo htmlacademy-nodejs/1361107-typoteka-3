@@ -2,7 +2,13 @@
 
 const {HttpCode, ResponseMessage} = require(`../../../../constants`);
 
-const articleRequiredKeys = [`announce`, `createdDate`, `сategory`, `fullText`, `title`];
+const articleRequiredKeys = [
+  `announce`,
+  `createdDate`,
+  `category`,
+  `fullText`,
+  `title`,
+];
 const articleNonRequiredKeys = [`picture`];
 
 module.exports = (req, res, next) => {

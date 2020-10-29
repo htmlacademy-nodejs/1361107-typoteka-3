@@ -53,7 +53,7 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
     announce: body.announce,
     fullText: body.fullText,
     createdDate: `${body.createdDate}, ${currentTime}`,
-    сategory: body.сategory,
+    category: body.category,
   };
   if (file) {
     articleData.picture = file.filename;

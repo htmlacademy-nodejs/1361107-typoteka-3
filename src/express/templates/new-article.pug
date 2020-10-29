@@ -32,7 +32,7 @@ block content
                       | Обзор
                 each category in categories
                   .new-publication__checkbox.new-publication__checkbox--auto
-                    input(type='checkbox', value=`${category}`, name='сategory' id=`checkbox-auto-${category}` )
+                    input(type='checkbox', value=`${category}`, name='category' id=`checkbox-auto-${category}` )
                     label(for=`checkbox-auto-${category}`) #{category}
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
