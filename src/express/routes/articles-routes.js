@@ -6,8 +6,7 @@ const api = require(`../api`).getAPI();
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {getTime} = require(`../../utils`);
-const renderNewArticleForm = require(`../middleware/render-new-article-form`);
+const {getTime, buildQueryString, formatDate} = require(`../../utils`);
 
 const UPLOAD_DIR = `../upload/img/`;
 
@@ -28,7 +27,15 @@ const articlesRouter = new Router();
 articlesRouter.get(`/category/:id`, (req, res) =>
   res.render(`articles-by-category`)
 );
-articlesRouter.get(`/add`, renderNewArticleForm);
+articlesRouter.get(`/add`, async (req, res) => {
+  const categories = await api.getCategories();
+  const currentDate = formatDate(new Date()).split(`,`)[0];
+  res.render(`new-article`, {
+    categories,
+    currentDate,
+    prevArticleData: Object.keys(req.query).length === 0 ? null : req.query,
+  });
+});
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
   try {
@@ -50,17 +57,24 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
     announce: body.announce,
     fullText: body.fullText,
     createdDate: `${body.createdDate}, ${currentTime}`,
-    category: body.category,
+    category: body.category || [],
   };
   if (file) {
     articleData.picture = file.filename;
+  }
+  if (typeof articleData.category === `string`) {
+    articleData.category = [articleData.category];
   }
   try {
     await api.createArticle(articleData);
     res.redirect(`/my`);
   } catch (error) {
-    req.body = {...articleData, createdDate: body.createdDate};
-    renderNewArticleForm(req, res);
+    res.redirect(
+        `/articles/add${buildQueryString({
+          ...articleData,
+          createdDate: body.createdDate,
+        })}`
+    );
   }
 });
 
