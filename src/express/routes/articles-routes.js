@@ -6,7 +6,8 @@ const api = require(`../api`).getAPI();
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {formatDate, getTime} = require(`../../utils`);
+const {getTime} = require(`../../utils`);
+const renderNewArticleForm = require(`../middleware/render-new-article-form`);
 
 const UPLOAD_DIR = `../upload/img/`;
 
@@ -27,11 +28,7 @@ const articlesRouter = new Router();
 articlesRouter.get(`/category/:id`, (req, res) =>
   res.render(`articles-by-category`)
 );
-articlesRouter.get(`/add`, async (req, res) => {
-  const categories = await api.getCategories();
-  const currentDate = formatDate(new Date()).split(`,`)[0];
-  res.render(`new-article`, {categories, currentDate});
-});
+articlesRouter.get(`/add`, renderNewArticleForm);
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
   try {
@@ -62,7 +59,8 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
     await api.createArticle(articleData);
     res.redirect(`/my`);
   } catch (error) {
-    res.redirect(`back`);
+    req.body = {...articleData, createdDate: body.createdDate};
+    renderNewArticleForm(req, res);
   }
 });
 
