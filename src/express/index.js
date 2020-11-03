@@ -20,6 +20,7 @@ const chalk = require(`chalk`);
 const app = express();
 
 app.use(express.static(path.resolve(__dirname, DirPath.PUBLIC)));
+app.use(express.static(path.resolve(__dirname, DirPath.UPLOAD)));
 app.set(`views`, path.resolve(__dirname, DirPath.TEMPLATES));
 app.set(`view engine`, `pug`);
 

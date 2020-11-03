@@ -33,3 +33,45 @@ exports.readContent = async (fileName) => {
     return [];
   }
 };
+
+exports.formatDate = (date) => {
+  const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+  const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+  const year = date.getFullYear();
+  const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+  const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+  return `${day}.${month}.${year}, ${hours}:${minutes}`;
+};
+
+exports.getTime = (date) => {
+  const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+  const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+  return `${hours}:${minutes}`;
+};
+
+exports.buildQueryString = (o) => {
+  const keys = Object.keys(o);
+
+  let queryString = `?`;
+
+  if (keys.length === 0) {
+    return queryString;
+  }
+
+  keys.forEach((key) => {
+    let value = o[key];
+    let arrayString = ``;
+    if (Array.isArray(value)) {
+      value.forEach((arrayValue) => {
+        arrayString = `${arrayString}${key}=${arrayValue}&`;
+      });
+      queryString = `${queryString}${arrayString}`;
+      return;
+    }
+    queryString = `${queryString}${key}=${value}&`;
+  });
+
+  return queryString.slice(0, -1);
+};

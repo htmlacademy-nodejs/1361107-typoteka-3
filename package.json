@@ -5,8 +5,8 @@
   "main": "./src/service/service.js",
   "scripts": {
     "start": "cross-env LOG_LEVEL=error node ./src/service/service.js",
-    "start::debug": "cross-env NODE_ENV=development node ./src/service/service.js",
-    "server": "cross-env NODE_ENV=development nodemon ./src/service/service.js --server",
+    "start::debug": "cross-env LOG_LEVEL=debug NODE_ENV=development nodemon ./src/service/service.js",
+    "start-rest-server": "cross-env LOG_LEVEL=debug NODE_ENV=development nodemon ./src/service/service.js --server",
     "start-front-server": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/",
     "test": "npm run eslint && npm run test::rest",
@@ -32,9 +32,11 @@
   },
   "dependencies": {
     "@types/express": "4.17.8",
+    "axios": "0.21.0",
     "chalk": "4.1.0",
     "cross-env": "7.0.2",
     "express": "4.17.1",
+    "multer": "1.4.2",
     "nanoid": "3.1.13",
     "pino": "6.7.0",
     "pug": "3.0.0"
