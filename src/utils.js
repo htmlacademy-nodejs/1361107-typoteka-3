@@ -1,13 +1,15 @@
 "use strict";
 
 const chalk = require(`chalk`);
+const {PICTURE_FILE_NAME_LIST} = require(`./constants`);
 const fs = require(`fs`).promises;
 
-exports.getRandomInt = (min, max) => {
+const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+exports.getRandomInt = getRandomInt;
 
 exports.shuffle = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -74,4 +76,28 @@ exports.buildQueryString = (o) => {
   });
 
   return queryString.slice(0, -1);
+};
+
+exports.getAvatar = () => `avatar-${getRandomInt(1, 5)}.png`;
+
+exports.getPictureFileName = () =>
+  `${
+    PICTURE_FILE_NAME_LIST[
+      getRandomInt(0, PICTURE_FILE_NAME_LIST.length - 1)
+    ]
+  }@1x.jpg`;
+
+exports.getCreatedDate = () => {
+  const currentDate = new Date();
+  const maxMilliseconds = currentDate.getTime();
+  const minMilliseconds = new Date().setMonth(currentDate.getMonth() - 3);
+
+  const createdDateMilliseconds = getRandomInt(
+      minMilliseconds,
+      maxMilliseconds
+  );
+
+  const date = new Date(createdDateMilliseconds);
+
+  return date.toISOString();
 };
