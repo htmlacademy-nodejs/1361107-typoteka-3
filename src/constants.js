@@ -20,6 +20,7 @@ exports.HELP_MESSAGE = `
   --help:               печатает этот текст
   --generate <count>    формирует файл mocks.json
   --server <port>       запускает API-сервер на указаном порту
+  --fill <count>        создает sql-файл c запросами для заполнения базы данных
 `;
 
 exports.DataFileName = {
@@ -27,6 +28,8 @@ exports.DataFileName = {
   categories: `data/categories.txt`,
   sentences: `data/sentences.txt`,
   comments: `data/comments.txt`,
+  firstNames: `data/firstnames.txt`,
+  lastNames: `data/lastnames.txt`,
 };
 
 exports.DEFAULT_PUBLICATION_AMOUNT = 1;
@@ -34,12 +37,21 @@ exports.DEFAULT_PUBLICATION_AMOUNT = 1;
 exports.MAX_PUBLICATION_AMOUNT = 1000;
 
 exports.ArticleRestrict = {
-  MAX_ANNOUNCE_SIZE: 5,
-  MAX_FULL_DESCR_SIZE: 30,
-  MAX_CATEGORY_AMOUND: 5
+  MAX_ANNOUNCE_SIZE: 2,
+  MAX_FULL_DESCR_SIZE: 10,
+  MAX_CATEGORY_AMOUND: 5,
 };
 
 exports.MOCKS_FILE_NAME = `mocks.json`;
+
+exports.FILL_DB_FILE_NAME = `fill-db.sql`;
+
+exports.PICTURE_FILE_NAME_LIST = [
+  `forest`,
+  `sea-fullsize`,
+  `sea`,
+  `skyscraper`,
+];
 
 exports.DEFAULT_API_PORT = 3000;
 
