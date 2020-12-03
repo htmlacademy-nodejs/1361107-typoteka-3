@@ -53,10 +53,6 @@ exports.PICTURE_FILE_NAME_LIST = [
   `skyscraper`,
 ];
 
-exports.DEFAULT_API_PORT = 3000;
-
-exports.DEFAULT_RENDER_PORT = 8080;
-
 exports.Route = {
   ROOT: `/`,
 };
