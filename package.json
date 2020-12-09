@@ -10,7 +10,8 @@
     "start-front-server": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/",
     "test": "npm run eslint && npm run test::rest",
-    "test::rest": "jest --testPathPattern=src/service"
+    "test::rest": "jest --testPathPattern=src/service",
+    "init-db": "cross-env LOG_LEVEL=debug NODE_ENV=development node ./src/service/cli/server/db/init-db.js"
   },
   "repository": {
     "type": "git",
