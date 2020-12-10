@@ -16,10 +16,10 @@ const {db} = require(`../db/db`);
 const app = new Router();
 
 category(app, new CategoryService(db));
+search(app, new SearchService(db));
 
 (async () => {
   const mockData = await getMockData();
-  search(app, new SearchService(mockData));
   articles(app, new ArticlesService(mockData), new CommentsService());
 })();
 

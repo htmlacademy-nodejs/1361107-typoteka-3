@@ -97,7 +97,7 @@ exports.DirPath = {
   UPLOAD: `upload`
 };
 
-module.exports.Env = {
+exports.Env = {
   DEVELOPMENT: `development`,
   PRODUCTION: `production`
 };
