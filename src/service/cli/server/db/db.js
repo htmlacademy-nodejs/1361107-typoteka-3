@@ -50,14 +50,14 @@ Comment.belongsTo(Article, {
 });
 
 Category.belongsToMany(Article, {
-  through: `Artcile_Categories`,
+  through: `Article_Categories`,
   as: `articles`,
   timestamps: false,
   foreignKey: `categoryId`,
   otherKey: `articleId`,
 });
 Article.belongsToMany(Category, {
-  through: `Artcile_Categories`,
+  through: `Article_Categories`,
   as: `categories`,
   timestamps: false,
   foreignKey: `articleId`,

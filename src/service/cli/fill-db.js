@@ -3,11 +3,10 @@
 const {nanoid} = require(`nanoid`);
 const {
   ExitCode,
-  MAX_OFFERS_NUMBER,
-  DEFAULT_OFFER_AMOUNT,
+  MAX_PUBLICATION_AMOUNT,
+  DEFAULT_PUBLICATION_AMOUNT,
   DataFileName,
   MAX_ID_LENGTH,
-  MAX_DESCR_SIZE,
   CommentRestrict,
   ArticleRestrict,
 } = require(`../../constants`);
@@ -27,12 +26,12 @@ module.exports = {
   run: async (args) => {
     let count = Number.parseInt(args[0], 10);
 
-    if (count > MAX_OFFERS_NUMBER) {
+    if (count > MAX_PUBLICATION_AMOUNT) {
       logger.error(`No more than 1000 ads`);
       process.exit(ExitCode.SUCCESS);
     }
 
-    count = !count || count <= 0 ? DEFAULT_OFFER_AMOUNT : count;
+    count = !count || count <= 0 ? DEFAULT_PUBLICATION_AMOUNT : count;
 
     const [
       titles,
@@ -112,7 +111,7 @@ module.exports = {
           dbArticleList.map(async (article) => {
             await article.addCategories(
                 shuffle([...categories])
-              .slice(0, getRandomInt(1, MAX_DESCR_SIZE))
+              .slice(0, getRandomInt(1, 4))
               .map(
                   (el) => categories.findIndex((category) => category === el) + 1
               )

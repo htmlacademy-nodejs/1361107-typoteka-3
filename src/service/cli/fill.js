@@ -51,18 +51,18 @@ const generateCommentsQuery = (commentsCount, commentSentenceList) => {
       });
   };
 
-  let currentOfferId = 1;
-  let currentOfferCount = 0;
+  let currentArticleId = 1;
+  let currentArticleCount = 0;
 
   const comments = generateCommentList(commentsCount, commentSentenceList).map(
       (comment) => {
         const userId = getRandomInt(1, commentsCount / 2);
-        if (currentOfferCount === 2) {
-          currentOfferCount = 0;
-          currentOfferId++;
+        if (currentArticleCount === 2) {
+          currentArticleCount = 0;
+          currentArticleId++;
         }
-        currentOfferCount++;
-        return `(DEFAULT, '${comment}', ${userId}, ${currentOfferId})`;
+        currentArticleCount++;
+        return `(DEFAULT, '${comment}', ${userId}, ${currentArticleId})`;
       }
   );
 
