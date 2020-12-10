@@ -115,7 +115,7 @@ exports.getSequelizeQueryOptions = (model, db) => {
         {
           model: db.Comment,
           as: `comments`,
-          attributes: {exclude: [`userId`]},
+          attributes: {exclude: [`userId`, `articleId`]},
           include: {
             model: db.User,
             as: `user`,

@@ -4,10 +4,10 @@ const {HttpCode, ResponseMessage} = require(`../../../../constants`);
 
 const articleRequiredKeys = [
   `announce`,
-  `createdDate`,
   `category`,
   `fullText`,
   `title`,
+  `userId`
 ];
 const articleNonRequiredKeys = [`picture`];
 

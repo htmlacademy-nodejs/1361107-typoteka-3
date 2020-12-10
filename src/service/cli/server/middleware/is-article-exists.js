@@ -2,10 +2,16 @@
 
 const {HttpCode, ResponseMessage} = require(`../../../../constants`);
 
-module.exports = (service) => (req, res, next) => {
+module.exports = (service) => async (req, res, next) => {
   const {articleId} = req.params;
 
-  const article = service.findOne(articleId);
+  let article;
+
+  try {
+    article = await service.findOne(articleId);
+  } catch (error) {
+    return res.status(HttpCode.BAD_REQUEST).send(ResponseMessage.BAD_REQUEST);
+  }
 
   if (!article) {
     return res.status(HttpCode.NOT_FOUND).send(ResponseMessage.DATA_NOT_FOUND);
