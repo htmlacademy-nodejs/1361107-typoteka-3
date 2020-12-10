@@ -11,13 +11,14 @@ const {
 const search = require(`./search`);
 const articles = require(`./articles`);
 const getMockData = require(`../../../lib/get-mock-data`);
+const {db} = require(`../db/db`);
 
 const app = new Router();
 
+category(app, new CategoryService(db));
+
 (async () => {
   const mockData = await getMockData();
-
-  category(app, new CategoryService(mockData));
   search(app, new SearchService(mockData));
   articles(app, new ArticlesService(mockData), new CommentsService());
 })();
