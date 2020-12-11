@@ -16,6 +16,6 @@ const app = new Router();
 
 category(app, new CategoryService(db));
 search(app, new SearchService(db));
-articles(app, new ArticlesService(db), new CommentsService());
+articles(app, new ArticlesService(db), new CommentsService(db));
 
 module.exports = app;

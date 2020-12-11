@@ -130,6 +130,14 @@ exports.getSequelizeQueryOptions = (model, db) => {
           },
         },
       ],
+    },
+    Comment: {
+      attributes: {exclude: [`userId`, `articleId`]},
+      include: {
+        model: db.User,
+        as: `user`,
+        attributes: [`id`, `firstName`, `lastName`, `email`],
+      },
     }
   };
 

@@ -41,26 +41,26 @@ module.exports = (app, articlesService, commentsService) => {
     return res.status(HttpCode.NO_CONTENT).json({});
   });
 
-  route.get(`/:articleId/comments`, isArticleExists(articlesService), (req, res) => {
+  route.get(`/:articleId/comments`, isArticleExists(articlesService), async (req, res) => {
     const {article} = res.locals;
 
-    const comments = commentsService.findAll(article);
+    const comments = await commentsService.findAll(article);
 
     return res.status(HttpCode.OK).json(comments);
   });
 
-  route.delete(`/:articleId/comments/:commentId`, isArticleExists(articlesService), (req, res) => {
+  route.delete(`/:articleId/comments/:commentId`, isArticleExists(articlesService), async (req, res) => {
     const {article} = res.locals;
     const {commentId} = req.params;
 
-    commentsService.delete(article, commentId);
+    await commentsService.delete(article, commentId);
 
     return res.status(HttpCode.NO_CONTENT).json({});
   });
 
-  route.post(`/:articleId/comments`, [commentValidator, isArticleExists(articlesService)], (req, res) => {
+  route.post(`/:articleId/comments`, [commentValidator, isArticleExists(articlesService)], async (req, res) => {
     const {article} = res.locals;
-    const newComment = commentsService.create(article, req.body);
+    const newComment = await commentsService.create(article, req.body);
 
     return res.status(HttpCode.OK).json(newComment);
   });
