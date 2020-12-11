@@ -1,6 +1,6 @@
 "use strict";
 
-const {HttpCode, DBErrorName} = require(`../../../../constants`);
+const {HttpCode, DBErrorName, ResponseMessage} = require(`../../../../constants`);
 const {AppError} = require(`../../../../utils`);
 const {getLogger} = require(`../../../lib/logger`);
 
@@ -29,7 +29,7 @@ const sendErrorProd = (err, res) => {
   } else {
     res
       .status(HttpCode.INTERNAL_SERVER_ERROR)
-      .send(`Something went very wrong`);
+      .send(ResponseMessage.INTERNAL_SERVER_ERROR);
   }
 };
 
