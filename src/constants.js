@@ -101,3 +101,9 @@ exports.Env = {
   DEVELOPMENT: `development`,
   PRODUCTION: `production`
 };
+
+exports.DBErrorName = {
+  FOREIGN_KEY_ERROR: `SequelizeForeignKeyConstraintError`,
+  DATABASE_ERROR: `SequelizeDatabaseError`,
+  VALIDATION_ERROR: `SequelizeValidationError`
+};

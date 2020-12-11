@@ -143,3 +143,22 @@ exports.getSequelizeQueryOptions = (model, db) => {
 
   return options[model];
 };
+
+
+exports.catchAsync = (fn) => {
+  return (req, res, next) => {
+    fn(req, res, next).catch((err) => next(err));
+  };
+};
+
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
+
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+exports.AppError = AppError;
