@@ -1,6 +1,10 @@
 "use strict";
 
-const {HttpCode, DBErrorName, ResponseMessage} = require(`../../../../constants`);
+const {
+  HttpCode,
+  DBErrorName,
+  ResponseMessage,
+} = require(`../../../../constants`);
 const {AppError} = require(`../../../../utils`);
 const {getLogger} = require(`../../../lib/logger`);
 
@@ -25,11 +29,11 @@ const handleValidationErrorDB = (err) => {
 
 const sendErrorProd = (err, res) => {
   if (err.isOperational) {
-    res.status(err.statusCode).send(err.message);
+    res.status(err.statusCode).json({message: err.message});
   } else {
     res
       .status(HttpCode.INTERNAL_SERVER_ERROR)
-      .send(ResponseMessage.INTERNAL_SERVER_ERROR);
+      .json({message: ResponseMessage.INTERNAL_SERVER_ERROR});
   }
 };
 
