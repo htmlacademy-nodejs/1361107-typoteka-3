@@ -13,7 +13,7 @@ block content
           if results.length > 0
             each result in results
               .search__result
-                time.search__date(datetime='2019-03-21T20:33') #{formatDate(result.createdAt)}
+                time.search__date(datetime=`${result.createdAt}`) #{formatDate(result.createdAt)}
                 a.search__link #{result.title}
         if results.length === 0 && search !== undefined
           p.search-page__empty Ничего не нашлось
