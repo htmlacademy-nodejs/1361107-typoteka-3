@@ -19,13 +19,11 @@ class API {
   }
 
   async getArticles() {
-    const articles = await this._load(`/articles`);
-    return articles;
+    return await this._load(`/articles`);
   }
 
   async getArticle(id) {
-    const article = await this._load(`/articles/${id}`);
-    return article;
+    return await this._load(`/articles/${id}`);
   }
 
   async search(query) {

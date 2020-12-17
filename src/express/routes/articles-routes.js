@@ -31,7 +31,7 @@ articlesRouter.get(
     `/add`,
     catchAsync(async (req, res) => {
       const categories = await api.getCategories();
-      const currentDate = formatDate(new Date()).split(`,`)[0];
+      const [currentDate] = formatDate(new Date()).split(`,`);
       res.render(`new-article`, {
         categories,
         currentDate,
