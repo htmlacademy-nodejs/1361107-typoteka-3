@@ -1,5 +1,6 @@
 "use strict";
 
+const {PAGINATION_OFFSET} = require(`../../../../constants`);
 const {getSequelizeQueryOptions} = require(`../../../../utils`);
 
 class ArticlesService {
@@ -7,12 +8,20 @@ class ArticlesService {
     this._db = db;
   }
 
-  async findAll() {
-    return await this._db.Article.findAll(getSequelizeQueryOptions(`Article`, this._db));
+  async findAll(page) {
+    return await this._db.Article.findAndCountAll({
+      ...getSequelizeQueryOptions(`Article`, this._db),
+      distinct: true,
+      limit: PAGINATION_OFFSET,
+      offset: PAGINATION_OFFSET * (page - 1),
+    });
   }
 
   async findOne(id) {
-    return await this._db.Article.findByPk(id, getSequelizeQueryOptions(`Article`, this._db));
+    return await this._db.Article.findByPk(
+        id,
+        getSequelizeQueryOptions(`Article`, this._db)
+    );
   }
 
   async create(articleData) {

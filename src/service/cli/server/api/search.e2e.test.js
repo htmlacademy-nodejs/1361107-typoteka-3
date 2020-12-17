@@ -26,7 +26,7 @@ describe(`/search route works correct:`, () => {
 
     beforeAll(async () => {
       response = await request(app).get(`/search`).query({
-        query: `Ёлки. История деревьев`,
+        search: `Ёлки. История деревьев`,
       });
     });
 
@@ -35,11 +35,11 @@ describe(`/search route works correct:`, () => {
     });
 
     test(`founds correct amount of offers`, () => {
-      expect(response.body.length).toBe(1);
+      expect(response.body.articles.length).toBe(1);
     });
 
     test(`founds offers with correct id`, () => {
-      expect(response.body[0].id).toBe(1);
+      expect(response.body.articles[0].id).toBe(1);
     });
   });
 
@@ -50,7 +50,7 @@ describe(`/search route works correct:`, () => {
 
     test(`returns code 404 if nothing was found`, async () => {
       const response = await request(app).get(`/search`).query({
-        query: `Какая-то чушь`,
+        search: `Какая-то чушь`,
       });
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
