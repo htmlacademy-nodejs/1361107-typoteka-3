@@ -18,16 +18,16 @@ class API {
     return response.data;
   }
 
-  async getArticles() {
-    return await this._load(`/articles`);
+  async getArticles(page) {
+    return await this._load(`/articles`, {params: {page}});
   }
 
   async getArticle(id) {
     return await this._load(`/articles/${id}`);
   }
 
-  async search(query) {
-    return this._load(`/search`, {params: {query}});
+  async search(search, page) {
+    return this._load(`/search`, {params: {search, page}});
   }
 
   async getCategories() {

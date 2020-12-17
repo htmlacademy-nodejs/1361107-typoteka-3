@@ -171,3 +171,25 @@ exports.getCardColor = () => {
 
   return number < 10 ? `0${number}` : number;
 };
+
+exports.getPageList = (page, maxPage) => {
+  let pageList = [];
+  if (maxPage <= 5) {
+    pageList = Array(maxPage)
+    .fill({}, 0, maxPage)
+    .map((el, i) => i + 1);
+    return pageList;
+  }
+
+  if (page === 1 || page === 2) {
+    pageList = [1, 2, 3, 4, 5];
+    return pageList;
+  }
+
+  if (page + 2 > maxPage) {
+    pageList = [maxPage - 4, maxPage - 3, maxPage - 2, maxPage - 1, maxPage];
+    return pageList;
+  }
+  pageList = [page - 2, page - 1, page, page + 1, page + 2];
+  return pageList;
+};

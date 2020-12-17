@@ -1,20 +1,38 @@
 section.main-page__list.preview
-  h2.visually-hidden Список превью статей
-  ul.preview__list
-    each article in articles
-      li(class={"preview__item": true, "preview__item--noimage": article.picture === undefined})
-        ul.preview__breadcrumbs
-          each category in article.categories
-            li.preview__breadcrumbs-item
-              a.preview__breadcrumbs-link(href='#') #{category.name}
-        if article.picture
-          .preview__background
-            img.preview__background-image(src=`/img/${article.picture}`, width='460', height='240', alt=`${article.title}`)
-        time.preview__time(datetime=`${article.createdAt}`) #{formatDate(article.createdAt)}
-        h3.preview__name
-          a.preview__name-link(href='#') #{article.title}
-        p.preview__text #{article.announce}
-        a.preview__comment(href='#')
-          | Комментарии 
-          span.preview__cloud
-          b.preview__comment-count #{article.comments.length}
+  if maxPage !== 0
+    if articles.length === 0
+      .main-page__empty-wrapper
+        p.main-page__empty-text Ничего не найдено
+    else
+      h2.visually-hidden Список превью статей
+      ul.preview__list
+        each article in articles
+          li(class={"preview__item": true, "preview__item--noimage": article.picture === undefined})
+            ul.preview__breadcrumbs
+              each category in article.categories
+                li.preview__breadcrumbs-item
+                  a.preview__breadcrumbs-link(href='#') #{category.name}
+            if article.picture
+              .preview__background
+                img.preview__background-image(src=`/img/${article.picture}`, width='460', height='240', alt=`${article.title}`)
+            time.preview__time(datetime=`${article.createdAt}`) #{formatDate(article.createdAt)}
+            h3.preview__name
+              a.preview__name-link(href='#') #{article.title}
+            p.preview__text #{article.announce}
+            a.preview__comment(href='#')
+              | Комментарии 
+              span.preview__cloud
+              b.preview__comment-count #{article.comments.length}
+      if pageList.length > 1 && articles.length !== 0
+        .preview__toggle-wrapper
+          ul.preview__pagination.pagination
+            li
+              a.pagination__button.button.button--backwards(href=`/?page=${page === 1 ? 1 : page - 1}`, class={"button--disabled": page === 1} aria-label='Страница назад') Назад
+            each pageNumber of pageList
+              li.pagination__item(class={"pagination__item--active": page === pageNumber})
+                a(href=`/?page=${pageNumber}`) #{pageNumber}
+            li
+              a.pagination__button.button.button--forward(href=`/?page=${page === maxPage ? maxPage : page + 1}`, class={"button--disabled": page === maxPage} aria-label='Страница вперед') Вперед
+  else
+    .main-page__empty-wrapper
+      p.main-page__empty-text Здесь пока пусто!

@@ -46,10 +46,10 @@ describe(`/articles route works correctly:`, () => {
       expect(response.statusCode).toBe(HttpCode.OK));
 
     test(`returns list with correct length`, () =>
-      expect(response.body.length).toBe(5));
+      expect(response.body.rows.length).toBe(5));
 
     test(`returns list where second article's id is correct`, () =>
-      expect(response.body[1].id).toBe(2));
+      expect(response.body.rows[1].id).toBe(2));
   });
 
   describe(`/articles/:articleId GET request`, () => {
@@ -87,7 +87,7 @@ describe(`/articles route works correctly:`, () => {
 
     test(`creates new article`, async () => {
       const responseAfterIncrease = await request(app).get(`/articles`);
-      expect(responseAfterIncrease.body.length).toBe(6);
+      expect(responseAfterIncrease.body.rows.length).toBe(6);
     });
   });
 

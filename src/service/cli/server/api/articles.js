@@ -14,8 +14,9 @@ module.exports = (app, articlesService, commentsService) => {
   route.get(
       `/`,
       catchAsync(async (req, res) => {
-        const articles = await articlesService.findAll();
-        return res.status(HttpCode.OK).json(articles);
+        const page = Number(req.query.page) || 1;
+        const result = await articlesService.findAll(page);
+        return res.status(HttpCode.OK).json(result);
       })
   );
 

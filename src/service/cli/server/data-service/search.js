@@ -1,5 +1,6 @@
 "use strict";
 
+const {SEARCH_PAGINATION_OFFSET} = require(`../../../../constants`);
 const {getSequelizeQueryOptions} = require(`../../../../utils`);
 
 class SearchService {
@@ -7,14 +8,24 @@ class SearchService {
     this._db = db;
   }
 
-  async findAll(searchText) {
+  async findAll(search, page) {
     const articles = await this._db.Article.findAll(
         getSequelizeQueryOptions(`Article`, this._db)
     );
 
-    return articles.filter((article) =>
-      article.title.toLowerCase().includes(searchText.toLowerCase())
+    const filteredArticles = articles.filter((article) =>
+      article.title.toLowerCase().includes(search.toLowerCase())
     );
+
+    const count = filteredArticles.length;
+
+    return {
+      count,
+      articles: filteredArticles.slice(
+          SEARCH_PAGINATION_OFFSET * (page - 1),
+          SEARCH_PAGINATION_OFFSET * (page - 1) + SEARCH_PAGINATION_OFFSET
+      ),
+    };
   }
 }
 
