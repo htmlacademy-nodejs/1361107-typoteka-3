@@ -11,6 +11,7 @@ const {
 const {getLogger} = require(`../../lib/logger`);
 const routes = require(`./api`);
 const {sequelize} = require(`./db/db`);
+const globalErrorHandler = require(`./middleware/global-error-handler`);
 
 const logger = getLogger({name: `api`});
 
@@ -30,8 +31,8 @@ app.use((req, res) => {
   logger.error(`Route not found: ${req.url}`);
 });
 
-app.use((err, _req, _res, _next) => {
-  logger.error(`An error occured on processing request: ${err.message}`);
+app.use((err, req, res, _next) => {
+  globalErrorHandler(err, req, res);
 });
 
 module.exports = {
@@ -39,16 +40,14 @@ module.exports = {
   run: async (args) => {
     const port = Number.parseInt(args[0], 10) || config.API_PORT;
 
-    await (async () => {
-      try {
-        logger.info(`Establishing database connection...`);
-        await sequelize.authenticate();
-        logger.info(`Database connection established`);
-      } catch (err) {
-        logger.error(`Failed to connect to database: ${err.message}`);
-        process.exit(ExitCode.ERROR);
-      }
-    })();
+    try {
+      logger.info(`Establishing database connection...`);
+      await sequelize.authenticate();
+      logger.info(`Database connection established`);
+    } catch (err) {
+      logger.error(`Failed to connect to database: ${err.message}`);
+      process.exit(ExitCode.ERROR);
+    }
 
     app.listen(port, (err) => {
       if (err) {

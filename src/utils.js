@@ -37,6 +37,9 @@ exports.readContent = async (fileName) => {
 };
 
 exports.formatDate = (date) => {
+  if (typeof date === `string`) {
+    date = new Date(date);
+  }
   const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
   const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
   const year = date.getFullYear();
@@ -100,4 +103,71 @@ exports.getCreatedDate = () => {
   const date = new Date(createdDateMilliseconds);
 
   return date.toISOString();
+};
+
+exports.getSequelizeQueryOptions = (model, db) => {
+  const options = {
+    Article: {
+      attributes: {exclude: [`userId`]},
+      include: [
+        {
+          model: db.User,
+          as: `owner`,
+          attributes: [`id`, `firstName`, `lastName`, `email`, `avatar`],
+        },
+        {
+          model: db.Comment,
+          as: `comments`,
+          attributes: {exclude: [`userId`, `articleId`]},
+          include: {
+            model: db.User,
+            as: `user`,
+            attributes: [`id`, `firstName`, `lastName`, `email`, `avatar`],
+          },
+        },
+        {
+          model: db.Category,
+          as: `categories`,
+          through: {
+            attributes: [],
+          },
+        },
+      ],
+    },
+    Comment: {
+      attributes: {exclude: [`userId`, `articleId`]},
+      include: {
+        model: db.User,
+        as: `user`,
+        attributes: [`id`, `firstName`, `lastName`, `email`],
+      },
+    }
+  };
+
+  return options[model];
+};
+
+
+exports.catchAsync = (fn) => {
+  return (req, res, next) => {
+    fn(req, res, next).catch((err) => next(err));
+  };
+};
+
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
+
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+exports.AppError = AppError;
+
+exports.getCardColor = () => {
+  let number = getRandomInt(1, 16);
+
+  return number < 10 ? `0${number}` : number;
 };

@@ -6,6 +6,7 @@ const {
   ExitCode,
   HttpCode,
   DirPath,
+  ResponseMessage,
 } = require(`../constants`);
 const mainRouter = require(`./routes/main-routes`);
 const registerRouter = require(`./routes/register-routes`);
@@ -32,10 +33,25 @@ app.use(`/articles`, articlesRouter);
 app.use(`/search`, searchRouter);
 app.use(`/categories`, categoriesRouter);
 
-app.use((req, res) => res.status(HttpCode.NOT_FOUND).render(`errors/400`));
-app.use((err, req, res) => {
+app.use((req, res) =>
+  res
+    .status(HttpCode.NOT_FOUND)
+    .render(`errors/400`, {
+      statusCode: HttpCode.NOT_FOUND,
+      message: ResponseMessage.PAGE_NOT_FOUND,
+    })
+);
+app.use((err, _req, res, _next) => {
   console.trace(err);
-  return res.status(HttpCode.INTERNAL_SERVER_ERROR).render(`errors/500`);
+  const statusCode = err.response
+    ? err.response.status
+    : HttpCode.INTERNAL_SERVER_ERROR;
+  if (statusCode < 500) {
+    return res
+      .status(err.response.status)
+      .render(`errors/400`, {statusCode, message: err.response.data.message});
+  }
+  return res.status(statusCode).render(`errors/500`);
 });
 
 app.listen(config.FRONT_PORT, (err) => {

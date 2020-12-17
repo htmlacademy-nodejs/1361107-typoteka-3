@@ -1,13 +1,14 @@
 "use strict";
 
 const {HttpCode, ResponseMessage} = require(`../../../../constants`);
+const {AppError} = require(`../../../../utils`);
 
 const articleRequiredKeys = [
   `announce`,
-  `createdDate`,
   `category`,
   `fullText`,
   `title`,
+  `userId`
 ];
 const articleNonRequiredKeys = [`picture`];
 
@@ -26,7 +27,7 @@ module.exports = (req, res, next) => {
   );
 
   if (!isRequiredKeysMatch) {
-    return res.status(HttpCode.BAD_REQUEST).send(ResponseMessage.BAD_REQUEST);
+    return next(new AppError(ResponseMessage.BAD_REQUEST, HttpCode.BAD_REQUEST));
   }
 
   articleNonRequiredKeys.forEach((key) => {

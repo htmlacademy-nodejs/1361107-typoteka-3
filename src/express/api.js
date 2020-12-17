@@ -18,23 +18,25 @@ class API {
     return response.data;
   }
 
-  getArticles() {
-    return this._load(`/articles`);
+  async getArticles() {
+    const articles = await this._load(`/articles`);
+    return articles;
   }
 
-  getArticle(id) {
-    return this._load(`/articles/${id}`);
+  async getArticle(id) {
+    const article = await this._load(`/articles/${id}`);
+    return article;
   }
 
-  search(query) {
+  async search(query) {
     return this._load(`/search`, {params: {query}});
   }
 
-  getCategories() {
+  async getCategories() {
     return this._load(`/categories`);
   }
 
-  createArticle(data) {
+  async createArticle(data) {
     return this._load(`/articles`, {
       method: `POST`,
       data

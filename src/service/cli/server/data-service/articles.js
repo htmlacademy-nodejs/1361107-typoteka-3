@@ -1,45 +1,51 @@
 "use strict";
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../../../constants`);
+const {getSequelizeQueryOptions} = require(`../../../../utils`);
 
 class ArticlesService {
-  constructor(articles) {
-    this._articles = articles;
+  constructor(db) {
+    this._db = db;
   }
 
-  findAll() {
-    return this._articles;
+  async findAll() {
+    return await this._db.Article.findAll(getSequelizeQueryOptions(`Article`, this._db));
   }
 
-  findOne(id) {
-    return this._articles.find((article) => article.id === id);
+  async findOne(id) {
+    return await this._db.Article.findByPk(id, getSequelizeQueryOptions(`Article`, this._db));
   }
 
-  create(articleData) {
-    const newArticle = {id: nanoid(MAX_ID_LENGTH), comments: [], ...articleData};
+  async create(articleData) {
+    const newArticle = await this._db.Article.create(articleData);
 
-    this._articles.push(newArticle);
+    await newArticle.addCategories(articleData.category);
 
     return newArticle;
   }
 
-  update(id, articleData) {
-    const oldArticleIndex = this._articles.findIndex((article) => article.id === id);
+  async update(id, articleData) {
+    const result = await this._db.Article.update(articleData, {
+      where: {
+        id,
+      },
+      returning: true,
+    });
 
-    this._articles[oldArticleIndex] = {...this._articles[oldArticleIndex], ...articleData};
+    const article = result[1][0];
 
-    return this._articles[oldArticleIndex];
-  }
-
-  delete(id) {
-    const deletingArticleIndex = this._articles.findIndex((article) => article.id === id);
-
-    if (deletingArticleIndex === -1) {
-      return;
+    if (articleData.category) {
+      await article.setCategories(articleData.category);
     }
 
-    this._articles.splice(deletingArticleIndex, 1);
+    return article;
+  }
+
+  async delete(id) {
+    await this._db.Article.destroy({
+      where: {
+        id,
+      },
+    });
   }
 }
 

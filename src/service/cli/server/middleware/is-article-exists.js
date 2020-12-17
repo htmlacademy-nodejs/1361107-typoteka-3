@@ -1,17 +1,20 @@
 "use strict";
 
 const {HttpCode, ResponseMessage} = require(`../../../../constants`);
+const {AppError, catchAsync} = require(`../../../../utils`);
 
-module.exports = (service) => (req, res, next) => {
+module.exports = (service) => catchAsync(async (req, res, next) => {
   const {articleId} = req.params;
 
-  const article = service.findOne(articleId);
+  let article;
+
+  article = await service.findOne(articleId);
 
   if (!article) {
-    return res.status(HttpCode.NOT_FOUND).send(ResponseMessage.DATA_NOT_FOUND);
+    return next(new AppError(ResponseMessage.DATA_NOT_FOUND, HttpCode.NOT_FOUND));
   }
 
   res.locals.article = article;
 
   return next();
-};
+});
