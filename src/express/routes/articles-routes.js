@@ -5,7 +5,7 @@ const api = require(`../api`).getAPI();
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {buildQueryString, formatDate, catchAsync} = require(`../../utils`);
+const {formatDate, catchAsync} = require(`../../utils`);
 
 const UPLOAD_DIR = `../upload/img/`;
 
@@ -34,8 +34,7 @@ articlesRouter.get(
       const [currentDate] = formatDate(new Date()).split(`,`);
       res.render(`new-article`, {
         categories,
-        currentDate,
-        prevArticleData: Object.keys(req.query).length === 0 ? null : req.query,
+        currentDate
       });
     })
 );
@@ -63,25 +62,28 @@ articlesRouter.post(
         title: body.title,
         announce: body.announce,
         fullText: body.fullText,
-        category: body.category || [],
+        categories: body.categories || [],
         userId: 1,
       };
       if (file) {
         articleData.picture = file.filename;
       }
-      if (typeof articleData.category === `string`) {
-        articleData.category = [articleData.category];
+      if (typeof articleData.categories === `string`) {
+        articleData.categories = [articleData.categories];
       }
       try {
         await api.createArticle(articleData);
         res.redirect(`/my`);
       } catch (error) {
-        res.redirect(
-            `/articles/add${buildQueryString({
-              ...articleData,
-              createdDate: body.createdDate,
-            })}`
-        );
+        const {details: errorDetails} = error.response.data.error;
+        const categories = await api.getCategories();
+        const [currentDate] = formatDate(new Date()).split(`,`);
+        res.render(`new-article`, {
+          categories,
+          currentDate,
+          prevArticleData: articleData,
+          errorDetails,
+        });
       }
     })
 );
