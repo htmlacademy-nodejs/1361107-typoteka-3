@@ -51,7 +51,13 @@ articlesRouter.get(
     })
 );
 
-articlesRouter.get(`/:id`, (req, res) => res.render(`article`));
+articlesRouter.get(`/:id`, catchAsync(async (req, res) => {
+  const {id} = req.params;
+
+  const article = await api.getArticle(id);
+
+  res.render(`article`, {article, formatDate});
+}));
 
 articlesRouter.post(
     `/add`,
