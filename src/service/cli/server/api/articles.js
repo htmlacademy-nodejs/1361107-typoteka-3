@@ -1,13 +1,14 @@
 "use strict";
 
 const {Router} = require(`express`);
-const {HttpCode, ResponseMessage} = require(`../../../../constants`);
+const {HttpCode} = require(`../../../../constants`);
 const isArticleExists = require(`../middleware/is-article-exists`);
-const {catchAsync, AppError} = require(`../../../../utils`);
+const {catchAsync} = require(`../../../../utils`);
 const schemaValidator = require(`../middleware/schema-validator`);
 const newArticleSchema = require(`../schemas/new-article`);
 const newCommentSchema = require(`../schemas/new-comment`);
 const updateArticleSchema = require(`../schemas/update-article`);
+const idValidator = require(`../middleware/id-validator`);
 
 module.exports = (app, articlesService, commentsService) => {
   const route = new Router();
@@ -21,11 +22,15 @@ module.exports = (app, articlesService, commentsService) => {
       })
   );
 
-  route.get(`/:articleId`, isArticleExists(articlesService), (req, res) => {
-    const {article} = res.locals;
+  route.get(
+      `/:articleId`,
+      [idValidator, isArticleExists(articlesService)],
+      (req, res) => {
+        const {article} = res.locals;
 
-    return res.status(HttpCode.OK).json(article);
-  });
+        return res.status(HttpCode.OK).json(article);
+      }
+  );
 
   route.post(
       `/`,
@@ -39,7 +44,11 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.put(
       `/:articleId`,
-      [schemaValidator(updateArticleSchema), isArticleExists(articlesService)],
+      [
+        idValidator,
+        schemaValidator(updateArticleSchema),
+        isArticleExists(articlesService),
+      ],
       catchAsync(async (req, res) => {
         const {articleId} = req.params;
         const updatedArticle = await articlesService.update(articleId, req.body);
@@ -50,14 +59,10 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.delete(
       `/:articleId`,
-      catchAsync(async (req, res, next) => {
+      idValidator,
+      catchAsync(async (req, res) => {
         const {articleId} = req.params;
 
-        if (isNaN(Number(articleId))) {
-          return next(
-              new AppError(ResponseMessage.BAD_REQUEST, HttpCode.BAD_REQUEST)
-          );
-        }
         await articlesService.delete(articleId);
 
         return res.status(HttpCode.NO_CONTENT).json({});
@@ -66,7 +71,7 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.get(
       `/:articleId/comments`,
-      isArticleExists(articlesService),
+      [idValidator, isArticleExists(articlesService)],
       catchAsync(async (req, res) => {
         const {article} = res.locals;
 
@@ -78,16 +83,10 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.delete(
       `/:articleId/comments/:commentId`,
-      isArticleExists(articlesService),
-      catchAsync(async (req, res, next) => {
+      [idValidator, isArticleExists(articlesService)],
+      catchAsync(async (req, res) => {
         const {article} = res.locals;
         const {commentId} = req.params;
-
-        if (isNaN(Number(commentId))) {
-          return next(
-              new AppError(ResponseMessage.BAD_REQUEST, HttpCode.BAD_REQUEST)
-          );
-        }
 
         await commentsService.delete(article, commentId);
 
@@ -97,7 +96,11 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.post(
       `/:articleId/comments`,
-      [schemaValidator(newCommentSchema), isArticleExists(articlesService)],
+      [
+        idValidator,
+        schemaValidator(newCommentSchema),
+        isArticleExists(articlesService),
+      ],
       catchAsync(async (req, res) => {
         const {article} = res.locals;
         const newComment = await commentsService.create(article, req.body);
