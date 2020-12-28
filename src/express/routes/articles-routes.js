@@ -51,6 +51,51 @@ articlesRouter.get(
     })
 );
 
+articlesRouter.post(
+    `/edit/:id`,
+    upload.single(`picture`),
+    catchAsync(async (req, res) => {
+      const {id} = req.params;
+      const {body, file} = req;
+      const articleData = {
+        title: body.title,
+        announce: body.announce,
+        fullText: body.fullText,
+        categories: body.categories || [],
+      };
+      if (typeof articleData.categories === `string`) {
+        articleData.categories = [articleData.categories];
+      }
+      if (body.loadedPicture) {
+        articleData.picture = body.loadedPicture;
+      }
+      if (file) {
+        articleData.picture = file.filename;
+      }
+      try {
+        await api.updateArticle(id, articleData);
+        res.redirect(`/articles/${id}`);
+      } catch (error) {
+        const {details: errorDetails} = error.response.data.error;
+        const [article, categories] = await Promise.all([
+          api.getArticle(id),
+          api.getCategories(),
+        ]);
+        res.render(`edit-article`, {
+          article: {
+            ...article,
+            ...articleData,
+            picture: articleData.picture || article.picture,
+            loadedPicture: file ? file.filename : null,
+          },
+          formatDate,
+          categories,
+          errorDetails,
+        });
+      }
+    })
+);
+
 articlesRouter.get(`/:id`, catchAsync(async (req, res) => {
   const {id} = req.params;
 

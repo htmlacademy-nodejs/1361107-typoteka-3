@@ -26,6 +26,13 @@ class API {
     return await this._load(`/articles/${id}`);
   }
 
+  async updateArticle(articleId, data) {
+    return this._load(`/articles/${articleId}`, {
+      method: `PUT`,
+      data
+    });
+  }
+
   async search(search, page) {
     return this._load(`/search`, {params: {search, page}});
   }

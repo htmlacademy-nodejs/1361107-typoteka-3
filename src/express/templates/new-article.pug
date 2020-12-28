@@ -35,7 +35,7 @@ block content
                       | Обзор
                 each category in categories
                   .new-publication__checkbox.new-publication__checkbox--auto
-                    input(type='checkbox', value=`${category.id}`, name='categories', id=`checkbox-auto-${category.id}`, checked=prevArticleData && prevArticleData.category ? prevArticleData.category.includes(String(category.id)) : false )
+                    input(type='checkbox', value=`${category.id}`, name='categories', id=`checkbox-auto-${category.id}`, checked=prevArticleData && prevArticleData.categories ? prevArticleData.categories.includes(String(category.id)) : false )
                     label(for=`checkbox-auto-${category.id}`) #{category.name}
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
