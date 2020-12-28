@@ -3,11 +3,11 @@
 const {Router} = require(`express`);
 const {HttpCode, ResponseMessage} = require(`../../../../constants`);
 const isArticleExists = require(`../middleware/is-article-exists`);
-const updateArticleValidator = require(`../middleware/update-article-validator`);
 const {catchAsync, AppError} = require(`../../../../utils`);
 const schemaValidator = require(`../middleware/schema-validator`);
 const newArticleSchema = require(`../schemas/new-article`);
 const newCommentSchema = require(`../schemas/new-comment`);
+const updateArticleSchema = require(`../schemas/update-article`);
 
 module.exports = (app, articlesService, commentsService) => {
   const route = new Router();
@@ -39,7 +39,7 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.put(
       `/:articleId`,
-      [updateArticleValidator, isArticleExists(articlesService)],
+      [schemaValidator(updateArticleSchema), isArticleExists(articlesService)],
       catchAsync(async (req, res) => {
         const {articleId} = req.params;
         const updatedArticle = await articlesService.update(articleId, req.body);
