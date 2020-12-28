@@ -27,7 +27,7 @@ class ArticlesService {
   async create(articleData) {
     const newArticle = await this._db.Article.create(articleData);
 
-    await newArticle.addCategories(articleData.category);
+    await newArticle.addCategories(articleData.categories);
 
     return newArticle;
   }
@@ -42,8 +42,8 @@ class ArticlesService {
 
     const article = result[1][0];
 
-    if (articleData.category) {
-      await article.setCategories(articleData.category);
+    if (articleData.categories) {
+      await article.setCategories(articleData.categories);
     }
 
     return article;
