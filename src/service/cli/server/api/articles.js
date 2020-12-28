@@ -2,12 +2,12 @@
 
 const {Router} = require(`express`);
 const {HttpCode, ResponseMessage} = require(`../../../../constants`);
-const commentValidator = require(`../middleware/comment-validator`);
 const isArticleExists = require(`../middleware/is-article-exists`);
 const updateArticleValidator = require(`../middleware/update-article-validator`);
 const {catchAsync, AppError} = require(`../../../../utils`);
 const schemaValidator = require(`../middleware/schema-validator`);
 const newArticleSchema = require(`../schemas/new-article`);
+const newCommentSchema = require(`../schemas/new-comment`);
 
 module.exports = (app, articlesService, commentsService) => {
   const route = new Router();
@@ -97,7 +97,7 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.post(
       `/:articleId/comments`,
-      [commentValidator, isArticleExists(articlesService)],
+      [schemaValidator(newCommentSchema), isArticleExists(articlesService)],
       catchAsync(async (req, res) => {
         const {article} = res.locals;
         const newComment = await commentsService.create(article, req.body);
