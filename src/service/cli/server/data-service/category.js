@@ -17,6 +17,10 @@ class CategoryService {
       group: [`Category.id`, `ArticleCategories.categoryId`]
     });
   }
+
+  async findOne(id) {
+    return await this._db.Category.findByPk(id);
+  }
 }
 
 module.exports = CategoryService;

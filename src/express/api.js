@@ -22,6 +22,10 @@ class API {
     return await this._load(`/articles`, {params: {page}});
   }
 
+  async getArticlesByCategory(page, categoryId) {
+    return this._load(`/articles/category/${categoryId}`, {params: {page}});
+  }
+
   async getArticle(id) {
     return await this._load(`/articles/${id}`);
   }
@@ -39,6 +43,10 @@ class API {
 
   async getCategories() {
     return this._load(`/categories`);
+  }
+
+  async getCategory(id) {
+    return this._load(`/categories/${id}`);
   }
 
   async createArticle(data) {

@@ -5,7 +5,8 @@ const api = require(`../api`).getAPI();
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {formatDate, catchAsync} = require(`../../utils`);
+const {formatDate, catchAsync, getPageList} = require(`../../utils`);
+const {PAGINATION_OFFSET} = require(`../../constants`);
 
 const UPLOAD_DIR = `../upload/img/`;
 
@@ -23,8 +24,27 @@ const upload = multer({storage});
 
 const articlesRouter = new Router();
 
-articlesRouter.get(`/category/:id`, (req, res) =>
-  res.render(`articles-by-category`)
+articlesRouter.get(
+    `/category/:id`,
+    catchAsync(async (req, res) => {
+      const page = Number(req.query.page) || 1;
+      const {id} = req.params;
+      const {count, articles} = await api.getArticlesByCategory(page, id);
+      const categories = await api.getCategories();
+      const searchedCategory = categories.find((category) => category.id === Number(id));
+      const maxPage = Math.ceil(count / PAGINATION_OFFSET);
+      const pageList = getPageList(page, maxPage);
+      return res.render(`articles-by-category`, {
+        page,
+        maxPage,
+        pageList,
+        articles,
+        searchedCategory,
+        count,
+        categories,
+        formatDate,
+      });
+    })
 );
 
 articlesRouter.get(
@@ -34,7 +54,7 @@ articlesRouter.get(
       const [currentDate] = formatDate(new Date()).split(`,`);
       res.render(`new-article`, {
         categories,
-        currentDate
+        currentDate,
       });
     })
 );
@@ -96,14 +116,17 @@ articlesRouter.post(
     })
 );
 
-articlesRouter.get(`/:id`, catchAsync(async (req, res) => {
-  const {id} = req.params;
+articlesRouter.get(
+    `/:id`,
+    catchAsync(async (req, res) => {
+      const {id} = req.params;
 
-  const article = await api.getArticle(id);
-  const categories = await api.getCategories();
+      const article = await api.getArticle(id);
+      const categories = await api.getCategories();
 
-  res.render(`article`, {article, formatDate, categories});
-}));
+      res.render(`article`, {article, formatDate, categories});
+    })
+);
 
 articlesRouter.post(
     `/:id/comments`,

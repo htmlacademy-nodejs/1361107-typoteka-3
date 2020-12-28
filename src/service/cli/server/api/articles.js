@@ -109,5 +109,17 @@ module.exports = (app, articlesService, commentsService) => {
       })
   );
 
+  route.get(
+      `/category/:categoryId`,
+      idValidator,
+      catchAsync(async (req, res) => {
+        const {categoryId} = req.params;
+        const page = Number(req.query.page) || 1;
+        const result = await articlesService.findByCategory(page, categoryId);
+
+        return res.status(HttpCode.OK).json(result);
+      })
+  );
+
   app.use(`/articles`, route);
 };
