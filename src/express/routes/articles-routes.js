@@ -100,8 +100,9 @@ articlesRouter.get(`/:id`, catchAsync(async (req, res) => {
   const {id} = req.params;
 
   const article = await api.getArticle(id);
+  const categories = await api.getCategories();
 
-  res.render(`article`, {article, formatDate});
+  res.render(`article`, {article, formatDate, categories});
 }));
 
 articlesRouter.post(
@@ -128,7 +129,6 @@ articlesRouter.post(
       }
     })
 );
-
 
 articlesRouter.post(
     `/add`,
