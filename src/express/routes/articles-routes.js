@@ -60,6 +60,32 @@ articlesRouter.get(`/:id`, catchAsync(async (req, res) => {
 }));
 
 articlesRouter.post(
+    `/:id/comments`,
+    catchAsync(async (req, res) => {
+      const {id} = req.params;
+      const {body} = req;
+      const commentData = {
+        userId: 1,
+        text: body.text,
+      };
+      try {
+        await api.createComment(id, commentData);
+        res.redirect(`/articles/${id}`);
+      } catch (error) {
+        const {details: errorDetails} = error.response.data.error;
+        const article = await api.getArticle(id);
+        res.render(`article`, {
+          article,
+          formatDate,
+          prevCommentData: {text: commentData.text},
+          errorDetails,
+        });
+      }
+    })
+);
+
+
+articlesRouter.post(
     `/add`,
     upload.single(`picture`),
     catchAsync(async (req, res) => {

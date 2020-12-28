@@ -40,6 +40,13 @@ class API {
       data
     });
   }
+
+  async createComment(articleId, data) {
+    return this._load(`/articles/${articleId}/comments`, {
+      method: `POST`,
+      data
+    });
+  }
 }
 
 const TIMEOUT = 2000;

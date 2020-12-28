@@ -30,10 +30,13 @@ block content
                     time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt)}
                   p.comments__message #{comment.text}
           .comments__footer.comments__footer--user
-            form(action='#', method='POST')
+            form(action=`/articles/${article.id}/comments`, method='POST')
               .comments__avatar.avatar
                 img(src='/img/avatar-2.png', alt='аватар пользователя')
               label
-                textarea(rows='1', placeholder='Присоединиться к обсуждению')
+                textarea(name='text', rows='1', placeholder=`${article.comments.length == 0 ? 'Начать обсуждение' : 'Присоединиться к обсуждению'}`) #{prevCommentData ? prevCommentData.text : ''}
+                if (errorDetails)
+                  each error in errorDetails.filter((el) => el.context.key === 'text')
+                    dive(style={color: 'red'}) - #{error.message}
               button.comments__button.button.button--colored(type='submit') Опубликовать
   script(src='/js/main.js')
