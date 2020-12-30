@@ -25,11 +25,18 @@ describe(`/articles route works correctly:`, () => {
     title: `Как собрать камни бесконечности`,
     announce: `Программировать не настолько сложно, как об этом говорят. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле?`,
     fullText: `Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравится только игры.`,
-    category: [1],
+    categories: [1],
     userId: 1,
   };
 
-  const mockNewComment = {text: `Новый комментарий!`, userId: 1};
+  const updateArticleData = {
+    title: `Какой-нибудь новый заголовок для статьи!!!`,
+  };
+
+  const mockNewComment = {
+    text: `Новый комментарий, очень крутой комментарий!`,
+    userId: 1,
+  };
 
   describe(`/articles GET request`, () => {
     let response;
@@ -47,9 +54,6 @@ describe(`/articles route works correctly:`, () => {
 
     test(`returns list with correct length`, () =>
       expect(response.body.rows.length).toBe(5));
-
-    test(`returns list where second article's id is correct`, () =>
-      expect(response.body.rows[1].id).toBe(2));
   });
 
   describe(`/articles/:articleId GET request`, () => {
@@ -95,17 +99,6 @@ describe(`/articles route works correctly:`, () => {
     beforeEach(async () => {
       await initAndFillMockDb();
     });
-
-    test(`returns 400 status code if data is not correct`, async () => {
-      for (const key of Object.keys(mockNewArticle)) {
-        const badarticle = {...mockNewArticle};
-        delete badarticle[key];
-        const badResponse = await request(app)
-          .post(`/articles`)
-          .send(badarticle);
-        expect(badResponse.statusCode).toBe(HttpCode.BAD_REQUEST);
-      }
-    });
   });
 
   describe(`/articles/:articleId PUT request`, () => {
@@ -113,9 +106,7 @@ describe(`/articles route works correctly:`, () => {
 
     beforeEach(async () => {
       await initAndFillMockDb();
-      response = await request(app)
-        .put(`/articles/1`)
-        .send(mockNewArticle);
+      response = await request(app).put(`/articles/1`).send(updateArticleData);
     });
 
     test(`returns 200 status code`, () =>
@@ -123,8 +114,8 @@ describe(`/articles route works correctly:`, () => {
 
     test(`changes article in the list`, async () => {
       const responceAfterChanges = await request(app).get(`/articles/1`);
-      expect(responceAfterChanges.body.announce).toBe(
-          `Программировать не настолько сложно, как об этом говорят. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле?`
+      expect(responceAfterChanges.body.title).toBe(
+          `Какой-нибудь новый заголовок для статьи!!!`
       );
     });
   });
@@ -137,9 +128,7 @@ describe(`/articles route works correctly:`, () => {
     });
 
     test(`returns 404 status code if article id was not found`, async () => {
-      response = await request(app)
-        .put(`/articles/999`)
-        .send(mockNewArticle);
+      response = await request(app).put(`/articles/999`).send(updateArticleData);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
   });
@@ -207,7 +196,7 @@ describe(`/articles route works correctly:`, () => {
           `/articles/1/comments`
       );
 
-      expect(responseAfterCreation.body[2].text).toBe(`Новый комментарий!`);
+      expect(responseAfterCreation.body[2].text).toBe(`Новый комментарий, очень крутой комментарий!`);
     });
   });
 
@@ -260,16 +249,12 @@ describe(`/articles route works correctly:`, () => {
     });
 
     test(`returns 404 status code if an article does not exist`, async () => {
-      response = await request(app).delete(
-          `/articles/999/comments/1`
-      );
+      response = await request(app).delete(`/articles/999/comments/1`);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
 
     test(`returns 204 status code if a comment does not exist`, async () => {
-      response = await request(app).delete(
-          `/articles/1/comments/999`
-      );
+      response = await request(app).delete(`/articles/1/comments/999`);
       expect(response.statusCode).toBe(HttpCode.NO_CONTENT);
     });
   });

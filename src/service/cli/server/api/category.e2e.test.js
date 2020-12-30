@@ -40,8 +40,8 @@ describe(`/categories route works correctly:`, () => {
     test(`returns correct list of categories`, () => {
       expect(response.body).toEqual(
           expect.arrayContaining([
-            {id: 1, name: `Деревья`},
-            {id: 2, name: `За жизнь`},
+            {articleCount: `5`, id: 1, name: `Деревья`},
+            {articleCount: `5`, id: 2, name: `За жизнь`},
           ])
       );
     });
