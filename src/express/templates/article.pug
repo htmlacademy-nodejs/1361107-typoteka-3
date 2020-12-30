@@ -17,7 +17,7 @@ block content
           .post__text
             p #{article.fullText || article.announce}
       .post__wrapper.post__wrapper--comments
-        section.post__comments.comments
+        section.post__comments.comments#comments
           h2.comments__title.title.title--middle Комментарии
           ul.comments__list
             each comment in article.comments
