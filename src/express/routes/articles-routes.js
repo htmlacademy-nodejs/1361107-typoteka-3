@@ -7,6 +7,7 @@ const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 const {formatDate, catchAsync, getPageList} = require(`../../utils`);
 const {PAGINATION_OFFSET} = require(`../../constants`);
+const idValidator = require(`../middleware/id-validator`);
 
 const UPLOAD_DIR = `../upload/img/`;
 
@@ -26,6 +27,7 @@ const articlesRouter = new Router();
 
 articlesRouter.get(
     `/category/:id`,
+    idValidator,
     catchAsync(async (req, res) => {
       const page = Number(req.query.page) || 1;
       const {id} = req.params;
@@ -61,6 +63,7 @@ articlesRouter.get(
 
 articlesRouter.get(
     `/edit/:id`,
+    idValidator,
     catchAsync(async (req, res) => {
       const {id} = req.params;
       const [article, categories] = await Promise.all([
@@ -73,7 +76,7 @@ articlesRouter.get(
 
 articlesRouter.post(
     `/edit/:id`,
-    upload.single(`picture`),
+    [idValidator, upload.single(`picture`)],
     catchAsync(async (req, res) => {
       const {id} = req.params;
       const {body, file} = req;
@@ -118,6 +121,7 @@ articlesRouter.post(
 
 articlesRouter.get(
     `/:id`,
+    idValidator,
     catchAsync(async (req, res) => {
       const {id} = req.params;
 
@@ -130,6 +134,7 @@ articlesRouter.get(
 
 articlesRouter.post(
     `/:id/comments`,
+    idValidator,
     catchAsync(async (req, res) => {
       const {id} = req.params;
       const {body} = req;
