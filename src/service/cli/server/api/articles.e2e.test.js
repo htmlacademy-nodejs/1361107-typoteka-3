@@ -1,16 +1,20 @@
+/* eslint-disable max-nested-callbacks */
 "use strict";
 
 const express = require(`express`);
 const request = require(`supertest`);
 const articles = require(`./articles`);
-const DataService = require(`../data-service/articles`);
-const CommentsService = require(`../data-service/comments`);
 const {HttpCode} = require(`../../../../constants`);
 const {mockDb, sequelize, initAndFillMockDb} = require(`../db/mock-db`);
+const {CategoryService, CommentsService, ArticlesService} = require(`../data-service`);
 
 const app = express();
 app.use(express.json());
-articles(app, new DataService(mockDb), new CommentsService(mockDb));
+articles(app, {
+  articlesService: new ArticlesService(mockDb),
+  commentsService: new CommentsService(mockDb),
+  categoryService: new CategoryService(mockDb),
+});
 
 describe(`/articles route works correctly:`, () => {
   beforeAll(async () => {
@@ -78,6 +82,67 @@ describe(`/articles route works correctly:`, () => {
     });
   });
 
+  describe(`/articles/:articleId wrong GET request`, () => {
+    let response;
+
+    beforeAll(async () => {
+      await initAndFillMockDb();
+    });
+
+    test(`returns 400 status code if articleId is invalid`, async () => {
+      response = await request(app).get(`/articles/invalid-id`);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`returns 404 status code if article is not exist`, async () => {
+      response = await request(app).get(`/articles/999`);
+      expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+    });
+  });
+
+  describe(`/articles/category/:categoryId GET request`, () => {
+    let response;
+
+    beforeAll(async () => {
+      await initAndFillMockDb();
+    });
+
+    beforeEach(async () => {
+      response = await request(app).get(`/articles/category/1`);
+    });
+
+    test(`returns 200 status code`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
+
+    test(`returns list with correct length`, () =>
+      expect(response.body.articles.length).toBe(5));
+
+    test(`returns list where each article has category with id equal 1`, () =>
+      expect(
+          response.body.articles.every((article) =>
+            article.categories.map((category) => category.id).includes(1)
+          )
+      ).toBeTruthy());
+  });
+
+  describe(`/articles/category/:categoryId wrong GET request`, () => {
+    let response;
+
+    beforeAll(async () => {
+      await initAndFillMockDb();
+    });
+
+    test(`returns 400 status code if categoryid is invalid`, async () => {
+      response = await request(app).get(`/articles/category/invalid-id`);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`returns 404 status code if category is not exist`, async () => {
+      response = await request(app).get(`/articles/category/999`);
+      expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+    });
+  });
+
   describe(`/articles POST request`, () => {
     let response;
 
@@ -127,8 +192,17 @@ describe(`/articles route works correctly:`, () => {
       await initAndFillMockDb();
     });
 
-    test(`returns 404 status code if article id was not found`, async () => {
-      response = await request(app).put(`/articles/999`).send(updateArticleData);
+    test(`returns 400 status code if articleId is invalid`, async () => {
+      response = await request(app)
+        .put(`/articles/invalid-id`)
+        .send(updateArticleData);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`returns 404 status code if article was not found`, async () => {
+      response = await request(app)
+        .put(`/articles/999`)
+        .send(updateArticleData);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
   });
@@ -155,11 +229,17 @@ describe(`/articles route works correctly:`, () => {
 
     beforeEach(async () => {
       await initAndFillMockDb();
-      response = await request(app).delete(`/articles/999`);
     });
 
-    test(`returns 204 status code anyway`, () =>
-      expect(response.statusCode).toBe(HttpCode.NO_CONTENT));
+    test(`returns 204 status code anyway even when article does not exist`, async () => {
+      response = await request(app).delete(`/articles/999`);
+      expect(response.statusCode).toBe(HttpCode.NO_CONTENT);
+    });
+
+    test(`returns 400 status code if articleId is invalid`, async () => {
+      response = await request(app).delete(`/articles/invalid-id`);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
   });
 
   describe(`/articles/:articleId/comments GET request`, () => {
@@ -196,7 +276,9 @@ describe(`/articles route works correctly:`, () => {
           `/articles/1/comments`
       );
 
-      expect(responseAfterCreation.body[2].text).toBe(`Новый комментарий, очень крутой комментарий!`);
+      expect(responseAfterCreation.body[2].text).toBe(
+          `Новый комментарий, очень крутой комментарий!`
+      );
     });
   });
 
@@ -212,6 +294,13 @@ describe(`/articles route works correctly:`, () => {
         .post(`/articles/999/comments`)
         .send(mockNewComment);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+    });
+
+    test(`returns 400 status code if article id is invalid`, async () => {
+      response = await request(app)
+        .post(`/articles/invalid-id/comments`)
+        .send(mockNewComment);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
     test(`returns 400 status code if data is invalid`, async () => {
@@ -251,6 +340,16 @@ describe(`/articles route works correctly:`, () => {
     test(`returns 404 status code if an article does not exist`, async () => {
       response = await request(app).delete(`/articles/999/comments/1`);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+    });
+
+    test(`returns 400 status code if article id is invalid`, async () => {
+      response = await request(app).delete(`/articles/invalid-id/comments/1`);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`returns 400 status code if comment id is invalid`, async () => {
+      response = await request(app).delete(`/articles/1/comments/invalid-id`);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
     test(`returns 204 status code if a comment does not exist`, async () => {
