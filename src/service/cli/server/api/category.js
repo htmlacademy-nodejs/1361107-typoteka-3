@@ -4,6 +4,7 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../../../../constants`);
 const {catchAsync} = require(`../../../../utils`);
 const idValidator = require(`../middleware/id-validator`);
+const isCategoryExists = require(`../middleware/is-category-exists`);
 
 module.exports = (app, service) => {
   const route = new Router();
@@ -18,10 +19,9 @@ module.exports = (app, service) => {
 
   route.get(
       `/:categoryId`,
-      idValidator,
+      [idValidator, isCategoryExists(service)],
       catchAsync(async (req, res) => {
-        const {categoryId} = req.params;
-        const category = await service.findOne(categoryId);
+        const {category} = res.locals;
         res.status(HttpCode.OK).json(category);
       })
   );

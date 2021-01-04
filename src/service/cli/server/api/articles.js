@@ -9,8 +9,11 @@ const newArticleSchema = require(`../schemas/new-article`);
 const newCommentSchema = require(`../schemas/new-comment`);
 const updateArticleSchema = require(`../schemas/update-article`);
 const idValidator = require(`../middleware/id-validator`);
+const isCategoryExists = require(`../middleware/is-category-exists`);
 
-module.exports = (app, articlesService, commentsService) => {
+module.exports = (app, services) => {
+  const {articlesService, commentsService, categoryService} = services;
+
   const route = new Router();
 
   route.get(
@@ -111,7 +114,7 @@ module.exports = (app, articlesService, commentsService) => {
 
   route.get(
       `/category/:categoryId`,
-      idValidator,
+      [idValidator, isCategoryExists(categoryService)],
       catchAsync(async (req, res) => {
         const {categoryId} = req.params;
         const page = Number(req.query.page) || 1;
