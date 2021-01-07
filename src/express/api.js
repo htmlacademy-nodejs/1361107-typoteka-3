@@ -22,8 +22,19 @@ class API {
     return await this._load(`/articles`, {params: {page}});
   }
 
+  async getArticlesByCategory(page, categoryId) {
+    return this._load(`/articles/category/${categoryId}`, {params: {page}});
+  }
+
   async getArticle(id) {
     return await this._load(`/articles/${id}`);
+  }
+
+  async updateArticle(articleId, data) {
+    return this._load(`/articles/${articleId}`, {
+      method: `PUT`,
+      data
+    });
   }
 
   async search(search, page) {
@@ -34,8 +45,19 @@ class API {
     return this._load(`/categories`);
   }
 
+  async getCategory(id) {
+    return this._load(`/categories/${id}`);
+  }
+
   async createArticle(data) {
     return this._load(`/articles`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  async createComment(articleId, data) {
+    return this._load(`/articles/${articleId}/comments`, {
       method: `POST`,
       data
     });

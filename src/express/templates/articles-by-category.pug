@@ -2,7 +2,7 @@ extends layout.pug
 
 block content
   main.articles-category
-    h1 Бизнес
+    h1 #{searchedCategory.name}
     section.articles-category__theme-list
       include partials/categories
     include partials/articles-list

@@ -108,3 +108,19 @@ exports.DBErrorName = {
 
 exports.PAGINATION_OFFSET = 8;
 exports.SEARCH_PAGINATION_OFFSET = 4;
+
+exports.NewArticleMessage = {
+  MIN_TITLE_LENGTH: `Заголовок должен быть не меньше 30 символов`,
+  MAX_TITLE_LENGTH: `Заголовок должен быть не больше 250 символов`,
+  MIN_ANNOUNCE_LENGTH: `Анонс должен быть не меньше 30 символов`,
+  MAX_ANNOUNCE_LENGTH: `Анонс должен быть не больше 250 символов`,
+  MAX_FULL_TEXT_LENGTH: `Описание должно быть не больше 1000 символов`,
+  REQUIRED_FIELD: `Поле {#label} обязательно для заполнения`,
+  WRONG_CATEGORY: `Категория должна быть типа число`
+};
+
+exports.NewCommentMessage = {
+  MIN_TEXT_LENGTH: `Текст комментария должен быть не меньше 20 символов`,
+  MAX_TEXT_LENGTH: `Текст комментария должен быть не больше 200 символов`,
+  REQUIRED_FIELD: `Поле {#label} обязательно для заполнения`,
+};

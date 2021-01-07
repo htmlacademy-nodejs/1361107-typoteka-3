@@ -21,6 +21,7 @@ const Category = require(`./models/category`)(sequelize);
 const Comment = require(`./models/comment`)(sequelize);
 const Article = require(`./models/article`)(sequelize);
 const User = require(`./models/user`)(sequelize);
+const ArticleCategories = require(`./models/article-categories`)(sequelize);
 
 User.hasMany(Article, {
   foreignKey: `userId`,
@@ -50,18 +51,32 @@ Comment.belongsTo(Article, {
 });
 
 Category.belongsToMany(Article, {
-  through: `Article_Categories`,
+  through: ArticleCategories,
   as: `articles`,
   timestamps: false,
   foreignKey: `categoryId`,
   otherKey: `articleId`,
 });
 Article.belongsToMany(Category, {
-  through: `Article_Categories`,
+  through: ArticleCategories,
   as: `categories`,
   timestamps: false,
   foreignKey: `articleId`,
   otherKey: `categoryId`,
+});
+Category.hasMany(ArticleCategories, {
+  foreignKey: `categoryId`
+});
+ArticleCategories.belongsTo(Category, {
+  foreignKey: `categoryId`,
+  as: `category`
+});
+Article.hasMany(ArticleCategories, {
+  foreignKey: `articleId`
+});
+ArticleCategories.belongsTo(Article, {
+  foreignKey: `articleId`,
+  as: `article`
 });
 
 const initDb = async () => {
@@ -75,6 +90,7 @@ module.exports = {
     User,
     Article,
     Comment,
+    ArticleCategories
   },
   sequelize,
   initDb,

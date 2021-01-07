@@ -23,6 +23,9 @@ block content
                 .form__field
                   label
                     input(type='text', placeholder='Заголовок', name='title', value=`${prevArticleData ? prevArticleData.title : ''}`, required='')
+                if (errorDetails)
+                  each error in errorDetails.filter((el) => el.context.key === 'title')
+                    div - #{error.message}
                 .form__field.form__field--post-image
                   label
                     input#image-name-field(type='text', placeholder='Фотография', readonly='')
@@ -32,16 +35,22 @@ block content
                       | Обзор
                 each category in categories
                   .new-publication__checkbox.new-publication__checkbox--auto
-                    input(type='checkbox', value=`${category.id}`, name='category', id=`checkbox-auto-${category.id}`, checked=prevArticleData && prevArticleData.category ? prevArticleData.category.includes(String(category.id)) : false )
+                    input(type='checkbox', value=`${category.id}`, name='categories', id=`checkbox-auto-${category.id}`, checked=prevArticleData && prevArticleData.categories ? prevArticleData.categories.includes(String(category.id)) : false )
                     label(for=`checkbox-auto-${category.id}`) #{category.name}
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
                     textarea(rows='1', placeholder='Анонс публикации' name='announce') #{prevArticleData ? prevArticleData.announce : ''}
+                if (errorDetails)
+                  each error in errorDetails.filter((el) => el.context.key === 'announce')
+                    div - #{error.message}
                 .form__field.form__field--publication-text
                   label
                     textarea(rows='1', placeholder='Полный текст публикации' name='fullText') #{prevArticleData ? prevArticleData.fullText : ''}
+                if (errorDetails)
+                  each error in errorDetails.filter((el) => el.context.key === 'fullText')
+                    div - #{error.message}
       .modal__overlay
   script(src='/js/vendor.js')
   script(src='/js/main.js')

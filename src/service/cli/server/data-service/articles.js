@@ -24,10 +24,32 @@ class ArticlesService {
     );
   }
 
+  async findByCategory(page, categoryId) {
+    const {count, rows} = await this._db.ArticleCategories.findAndCountAll({
+      where: {
+        categoryId,
+      },
+      attributes: [`articleId`],
+      limit: PAGINATION_OFFSET,
+      offset: PAGINATION_OFFSET * (page - 1),
+    });
+
+    const idList = rows.map((el) => el.articleId);
+
+    const articles = await this._db.Article.findAll({
+      ...getSequelizeQueryOptions(`Article`, this._db),
+      where: {
+        id: idList
+      }
+    });
+
+    return {count, articles};
+  }
+
   async create(articleData) {
     const newArticle = await this._db.Article.create(articleData);
 
-    await newArticle.addCategories(articleData.category);
+    await newArticle.addCategories(articleData.categories);
 
     return newArticle;
   }
@@ -42,8 +64,8 @@ class ArticlesService {
 
     const article = result[1][0];
 
-    if (articleData.category) {
-      await article.setCategories(articleData.category);
+    if (articleData.categories) {
+      await article.setCategories(articleData.categories);
     }
 
     return article;

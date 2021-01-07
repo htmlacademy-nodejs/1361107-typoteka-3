@@ -16,6 +16,10 @@ const app = new Router();
 
 category(app, new CategoryService(db));
 search(app, new SearchService(db));
-articles(app, new ArticlesService(db), new CommentsService(db));
+articles(app, {
+  articlesService: new ArticlesService(db),
+  commentsService: new CommentsService(db),
+  categoryService: new CategoryService(db),
+});
 
 module.exports = app;
