@@ -133,3 +133,5 @@ exports.NewUserMessage = {
   WRONG_EMAIL: `Введите валидный email`,
   REQUIRED_FIELD: `Поле {#label} обязательно для заполнения`,
 };
+
+exports.SALT_ROUNDS = 10;
