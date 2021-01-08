@@ -6,10 +6,8 @@ const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 const {formatDate, catchAsync, getPageList} = require(`../../utils`);
-const {PAGINATION_OFFSET} = require(`../../constants`);
+const {PAGINATION_OFFSET, UPLOAD_DIR} = require(`../../constants`);
 const idValidator = require(`../middleware/id-validator`);
-
-const UPLOAD_DIR = `../upload/img/`;
 
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 

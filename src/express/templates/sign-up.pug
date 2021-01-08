@@ -16,27 +16,43 @@ block content
             button.popup__tab-switcher.button(type='button') 
               a(href='/login') Войти
         .popup__form.popup__form--active.form.form--register
-          form(action='#', method='get')
+          form(action='/register', method='post', enctype='multipart/form-data', autocomplete='off')
             .form__field
               label
-                input(type='email', placeholder='Электронная почта', required='')
+                input(type='email', placeholder='Электронная почта', name='email', value=prevUserData ? prevUserData.email : '', required='')
+            if (errorDetails)
+              each error in errorDetails.filter((el) => el.context.key === 'email')
+                div(style={color: 'red'}) - #{error.message}
             .form__field
               label
-                input(type='text', placeholder='Имя', required='')
+                input(type='text', placeholder='Имя', name='firstName', value=prevUserData ? prevUserData.firstName : '', required='')
+            if (errorDetails)
+              each error in errorDetails.filter((el) => el.context.key === 'firstName')
+                div(style={color: 'red'}) - #{error.message}
             .form__field
               label
-                input(type='text', placeholder='Фамилия')
+                input(type='text', placeholder='Фамилия', name='lastName', value=prevUserData ? prevUserData.lastName : '', required='')
+            if (errorDetails)
+              each error in errorDetails.filter((el) => el.context.key === 'lastName')
+                div(style={color: 'red'}) - #{error.message}
             .form__field
               label
-                input(type='password', placeholder='Пароль', required='')
+                input(type='password', placeholder='Пароль', name='password', required='')
+            if (errorDetails)
+              each error in errorDetails.filter((el) => el.context.key === 'password')
+                div(style={color: 'red'}) - #{error.message}
             .form__field
               label
-                input(type='password', placeholder='Повтор пароля', required='')
+                input(type='password', placeholder='Повтор пароля', name='repeatPassword', required='')
+            if (errorDetails)
+              each error in errorDetails.filter((el) => el.context.key === 'repeatPassword')
+                div(style={color: 'red'}) - #{error.message}
             .form__image-loader
               a.form__avatar.avatar
                 img(src='/img/icons/smile.svg', alt='аватар пользователя')
               label
-                input.visually-hidden(type='file')
+                input.visually-hidden(type='file', name='avatar')
                 | Загрузить фото профиля
             button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться
       .modal__overlay
+  script(src='/js/main.js')
