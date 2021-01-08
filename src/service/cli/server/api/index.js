@@ -7,9 +7,11 @@ const {
   SearchService,
   CommentsService,
   ArticlesService,
+  UsersService,
 } = require(`../data-service`);
 const search = require(`./search`);
 const articles = require(`./articles`);
+const users = require(`./users`);
 const {db} = require(`../db/db`);
 
 const app = new Router();
@@ -21,5 +23,6 @@ articles(app, {
   commentsService: new CommentsService(db),
   categoryService: new CategoryService(db),
 });
+users(app, new UsersService(db));
 
 module.exports = app;
