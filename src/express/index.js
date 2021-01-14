@@ -27,6 +27,8 @@ const mySessionStore = new SequelizeStore({
   checkExpirationInterval: 60000,
 });
 
+const app = express();
+
 app.use(session({
   secret: config.SESSION_SECRET,
   store: mySessionStore,
@@ -36,8 +38,6 @@ app.use(session({
 }));
 
 sequelize.sync({force: false});
-
-const app = express();
 
 app.use(express.static(path.resolve(__dirname, DirPath.PUBLIC)));
 app.use(express.static(path.resolve(__dirname, DirPath.UPLOAD)));

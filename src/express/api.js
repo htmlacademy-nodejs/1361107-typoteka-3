@@ -5,11 +5,10 @@ const config = require(`../config`);
 const {DEFAULT_API_PORT} = require(`../constants`);
 
 class API {
-
   constructor(baseURL, timeout) {
     this._http = axios.create({
       baseURL,
-      timeout
+      timeout,
     });
   }
 
@@ -33,7 +32,7 @@ class API {
   async updateArticle(articleId, data) {
     return this._load(`/articles/${articleId}`, {
       method: `PUT`,
-      data
+      data,
     });
   }
 
@@ -52,21 +51,28 @@ class API {
   async createArticle(data) {
     return this._load(`/articles`, {
       method: `POST`,
-      data
+      data,
     });
   }
 
   async createComment(articleId, data) {
     return this._load(`/articles/${articleId}/comments`, {
       method: `POST`,
-      data
+      data,
     });
   }
 
   async createUser(data) {
-    return await this._load(`/user`, {
+    return await this._load(`/user/signup`, {
       method: `POST`,
-      data
+      data,
+    });
+  }
+
+  async loginUser(data) {
+    return await this._load(`/user/login`, {
+      method: `POST`,
+      data,
     });
   }
 }
@@ -80,5 +86,5 @@ const defaultAPI = new API(defaultUrl, TIMEOUT);
 
 module.exports = {
   API,
-  getAPI: () => defaultAPI
+  getAPI: () => defaultAPI,
 };
