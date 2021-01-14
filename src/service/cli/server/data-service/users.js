@@ -28,6 +28,16 @@ class UsersService {
       ],
     });
   }
+
+  async findAdmin(email) {
+    return await this._db.User.findOne({
+      where: {
+        email,
+        isAdmin: true
+      },
+      ...getSequelizeQueryOptions(`User`, this._db),
+    });
+  }
 }
 
 module.exports = UsersService;

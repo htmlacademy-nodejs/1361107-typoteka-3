@@ -21,10 +21,6 @@ module.exports = Joi.object({
     "string.empty": NewArticleMessage.REQUIRED_FIELD,
   }),
   picture: Joi.string(),
-  userId: Joi.number()
-    .label(`ID пользователя`)
-    .required()
-    .messages({"any.required": NewArticleMessage.REQUIRED_FIELD}),
   categories: Joi.array()
     .label(`Категории`)
     .items(Joi.number())

@@ -22,6 +22,7 @@ articles(app, {
   articlesService: new ArticlesService(db),
   commentsService: new CommentsService(db),
   categoryService: new CategoryService(db),
+  usersService: new UsersService(db),
 });
 users(app, new UsersService(db));
 

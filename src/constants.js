@@ -143,5 +143,5 @@ exports.UPLOAD_DIR = `../upload/img/`;
 exports.UserErrorMessage = {
   USER_NOT_EXISTS: `Пользователя не существует`,
   WRONG_DATA: `Неверный email или пароль`,
-  FORBIDDEN: `У пользователя нет прав на данное действие`
+  FORBIDDEN: `У вас нет прав на данное действие`
 };
