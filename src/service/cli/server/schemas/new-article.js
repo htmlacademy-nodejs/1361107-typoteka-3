@@ -28,9 +28,11 @@ module.exports = Joi.object({
   categories: Joi.array()
     .label(`Категории`)
     .items(Joi.number())
+    .min(1)
     .required()
     .messages({
       "any.required": NewArticleMessage.REQUIRED_FIELD,
       "number.base": NewArticleMessage.WRONG_CATEGORY,
+      "array.min": NewArticleMessage.MIN_CATEGORY_ARRAY_LENGTH
     }),
 });
