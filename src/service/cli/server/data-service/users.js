@@ -25,6 +25,7 @@ class UsersService {
         `email`,
         `avatar`,
         `password`,
+        `isAdmin`
       ],
     });
   }

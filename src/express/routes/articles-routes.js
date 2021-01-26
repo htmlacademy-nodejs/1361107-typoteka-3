@@ -27,6 +27,7 @@ articlesRouter.get(
     `/category/:id`,
     idValidator,
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const page = Number(req.query.page) || 1;
       const {id} = req.params;
       const {count, articles} = await api.getArticlesByCategory(page, id);
@@ -43,6 +44,7 @@ articlesRouter.get(
         count,
         categories,
         formatDate,
+        user
       });
     })
 );
@@ -50,11 +52,13 @@ articlesRouter.get(
 articlesRouter.get(
     `/add`,
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const categories = await api.getCategories();
       const [currentDate] = formatDate(new Date()).split(`,`);
       res.render(`new-article`, {
         categories,
         currentDate,
+        user
       });
     })
 );
@@ -63,12 +67,13 @@ articlesRouter.get(
     `/edit/:id`,
     idValidator,
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const {id} = req.params;
       const [article, categories] = await Promise.all([
         api.getArticle(id),
         api.getCategories(),
       ]);
-      res.render(`edit-article`, {article, categories, formatDate});
+      res.render(`edit-article`, {article, categories, formatDate, user});
     })
 );
 
@@ -122,11 +127,12 @@ articlesRouter.get(
     idValidator,
     catchAsync(async (req, res) => {
       const {id} = req.params;
+      const {user} = req.session;
 
       const article = await api.getArticle(id);
       const categories = await api.getCategories();
 
-      res.render(`article`, {article, formatDate, categories});
+      res.render(`article`, {article, formatDate, categories, user});
     })
 );
 
@@ -136,8 +142,9 @@ articlesRouter.post(
     catchAsync(async (req, res) => {
       const {id} = req.params;
       const {body} = req;
+      const {user} = req.session;
       const commentData = {
-        userId: 1,
+        userId: user.id,
         text: body.text,
       };
       try {
@@ -166,7 +173,6 @@ articlesRouter.post(
         announce: body.announce,
         fullText: body.fullText,
         categories: body.categories || [],
-        userId: 1,
       };
       if (file) {
         articleData.picture = file.filename;

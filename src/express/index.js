@@ -23,7 +23,7 @@ const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
 
 const mySessionStore = new SequelizeStore({
   db: sequelize,
-  expiration: config.EXPIRATION_TIME,
+  expiration: Number(config.EXPIRATION_TIME),
   checkExpirationInterval: 60000,
 });
 
