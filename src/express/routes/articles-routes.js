@@ -6,8 +6,14 @@ const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 const {formatDate, catchAsync, getPageList} = require(`../../utils`);
-const {PAGINATION_OFFSET, UPLOAD_DIR} = require(`../../constants`);
+const {
+  PAGINATION_OFFSET,
+  UPLOAD_DIR,
+  HttpCode,
+  UserErrorMessage,
+} = require(`../../constants`);
 const idValidator = require(`../middleware/id-validator`);
+const adminRoute = require(`../middleware/admin-route`);
 
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
@@ -32,7 +38,9 @@ articlesRouter.get(
       const {id} = req.params;
       const {count, articles} = await api.getArticlesByCategory(page, id);
       const categories = await api.getCategories();
-      const searchedCategory = categories.find((category) => category.id === Number(id));
+      const searchedCategory = categories.find(
+          (category) => category.id === Number(id)
+      );
       const maxPage = Math.ceil(count / PAGINATION_OFFSET);
       const pageList = getPageList(page, maxPage);
       return res.render(`articles-by-category`, {
@@ -44,13 +52,14 @@ articlesRouter.get(
         count,
         categories,
         formatDate,
-        user
+        user,
       });
     })
 );
 
 articlesRouter.get(
     `/add`,
+    adminRoute,
     catchAsync(async (req, res) => {
       const {user} = req.session;
       const categories = await api.getCategories();
@@ -58,14 +67,14 @@ articlesRouter.get(
       res.render(`new-article`, {
         categories,
         currentDate,
-        user
+        user,
       });
     })
 );
 
 articlesRouter.get(
     `/edit/:id`,
-    idValidator,
+    [adminRoute, idValidator],
     catchAsync(async (req, res) => {
       const {user} = req.session;
       const {id} = req.params;
@@ -79,7 +88,7 @@ articlesRouter.get(
 
 articlesRouter.post(
     `/edit/:id`,
-    [idValidator, upload.single(`picture`)],
+    [adminRoute, idValidator, upload.single(`picture`)],
     catchAsync(async (req, res) => {
       const {id} = req.params;
       const {body, file} = req;
@@ -143,6 +152,13 @@ articlesRouter.post(
       const {id} = req.params;
       const {body} = req;
       const {user} = req.session;
+      if (!user) {
+        res.status(HttpCode.FORBIDDEN).render(`errors/400`, {
+          statusCode: HttpCode.FORBIDDEN,
+          message: UserErrorMessage.FORBIDDEN,
+        });
+        return;
+      }
       const commentData = {
         userId: user.id,
         text: body.text,
@@ -165,7 +181,7 @@ articlesRouter.post(
 
 articlesRouter.post(
     `/add`,
-    upload.single(`picture`),
+    [adminRoute, upload.single(`picture`)],
     catchAsync(async (req, res) => {
       const {body, file} = req;
       const articleData = {

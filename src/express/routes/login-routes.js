@@ -13,7 +13,6 @@ loginRouter.post(
     catchAsync(async (req, res) => {
       try {
         const user = await api.loginUser(req.body);
-        console.log(user);
         req.session.user = user;
         res.redirect(`/login/processing`);
       } catch (error) {
