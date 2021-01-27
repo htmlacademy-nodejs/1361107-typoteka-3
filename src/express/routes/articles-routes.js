@@ -90,6 +90,7 @@ articlesRouter.post(
     `/edit/:id`,
     [adminRoute, idValidator, upload.single(`picture`)],
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const {id} = req.params;
       const {body, file} = req;
       const articleData = {
@@ -108,7 +109,7 @@ articlesRouter.post(
         articleData.picture = file.filename;
       }
       try {
-        await api.updateArticle(id, articleData);
+        await api.updateArticle(id, articleData, user.email);
         res.redirect(`/articles/${id}`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
@@ -126,6 +127,7 @@ articlesRouter.post(
           formatDate,
           categories,
           errorDetails,
+          user
         });
       }
     })
@@ -164,7 +166,7 @@ articlesRouter.post(
         text: body.text,
       };
       try {
-        await api.createComment(id, commentData);
+        await api.createComment(id, commentData, user.email);
         res.redirect(`/articles/${id}`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
@@ -174,6 +176,7 @@ articlesRouter.post(
           formatDate,
           prevCommentData: {text: commentData.text},
           errorDetails,
+          user
         });
       }
     })
@@ -183,6 +186,7 @@ articlesRouter.post(
     `/add`,
     [adminRoute, upload.single(`picture`)],
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const {body, file} = req;
       const articleData = {
         title: body.title,
@@ -197,7 +201,7 @@ articlesRouter.post(
         articleData.categories = [articleData.categories];
       }
       try {
-        await api.createArticle(articleData);
+        await api.createArticle(articleData, user.email);
         res.redirect(`/my`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
@@ -208,6 +212,7 @@ articlesRouter.post(
           currentDate,
           prevArticleData: articleData,
           errorDetails,
+          user
         });
       }
     })

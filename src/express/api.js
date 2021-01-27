@@ -29,10 +29,13 @@ class API {
     return await this._load(`/articles/${id}`);
   }
 
-  async updateArticle(articleId, data) {
+  async updateArticle(articleId, data, userEmail) {
     return this._load(`/articles/${articleId}`, {
       method: `PUT`,
       data,
+      params: {
+        userEmail
+      }
     });
   }
 
@@ -48,17 +51,23 @@ class API {
     return this._load(`/categories/${id}`);
   }
 
-  async createArticle(data) {
+  async createArticle(data, userEmail) {
     return this._load(`/articles`, {
       method: `POST`,
       data,
+      params: {
+        userEmail
+      }
     });
   }
 
-  async createComment(articleId, data) {
+  async createComment(articleId, data, userEmail) {
     return this._load(`/articles/${articleId}/comments`, {
       method: `POST`,
       data,
+      params: {
+        userEmail
+      }
     });
   }
 
