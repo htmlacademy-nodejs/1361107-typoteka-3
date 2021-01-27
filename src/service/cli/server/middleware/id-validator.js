@@ -4,10 +4,10 @@ const {ResponseMessage, HttpCode} = require(`../../../../constants`);
 const {AppError} = require(`../../../../utils`);
 
 module.exports = (req, res, next) => {
-  const {articleId, commentId, categoryId} = req.params;
+  const {articleId, commentId, categoryId, id} = req.params;
 
-  for (const id of [articleId, commentId, categoryId]) {
-    if (id && isNaN(Number(id))) {
+  for (const el of [articleId, commentId, categoryId, id]) {
+    if (el && isNaN(Number(el))) {
       return next(
           new AppError(ResponseMessage.BAD_REQUEST, HttpCode.BAD_REQUEST)
       );

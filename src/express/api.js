@@ -84,6 +84,24 @@ class API {
       data,
     });
   }
+
+  async deleteArticle(articleId, userEmail) {
+    return this._load(`/articles/${articleId}`, {
+      method: `DELETE`,
+      params: {
+        userEmail
+      },
+    });
+  }
+
+  async deleteComment(articleId, commentId, userEmail) {
+    return this._load(`/articles/${articleId}/comments/${commentId}`, {
+      method: `DELETE`,
+      params: {
+        userEmail
+      },
+    });
+  }
 }
 
 const TIMEOUT = 2000;

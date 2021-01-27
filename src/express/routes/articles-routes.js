@@ -12,8 +12,8 @@ const {
   HttpCode,
   UserErrorMessage,
 } = require(`../../constants`);
-const idValidator = require(`../middleware/id-validator`);
 const adminRoute = require(`../middleware/admin-route`);
+const idValidator = require(`../../service/cli/server/middleware/id-validator`);
 
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
@@ -127,7 +127,7 @@ articlesRouter.post(
           formatDate,
           categories,
           errorDetails,
-          user
+          user,
         });
       }
     })
@@ -176,7 +176,7 @@ articlesRouter.post(
           formatDate,
           prevCommentData: {text: commentData.text},
           errorDetails,
-          user
+          user,
         });
       }
     })
@@ -212,9 +212,31 @@ articlesRouter.post(
           currentDate,
           prevArticleData: articleData,
           errorDetails,
-          user
+          user,
         });
       }
+    })
+);
+
+articlesRouter.get(
+    `/:articleId/delete-comment/:commentId`,
+    [idValidator, adminRoute],
+    catchAsync(async (req, res) => {
+      const {user} = req.session;
+      const {articleId, commentId} = req.params;
+      await api.deleteComment(articleId, commentId, user.email);
+      res.redirect(`/my/comments`);
+    })
+);
+
+articlesRouter.get(
+    `/delete/:id`,
+    [idValidator, adminRoute],
+    catchAsync(async (req, res) => {
+      const {user} = req.session;
+      const {id} = req.params;
+      await api.deleteArticle(id, user.email);
+      res.redirect(`/my`);
     })
 );
 

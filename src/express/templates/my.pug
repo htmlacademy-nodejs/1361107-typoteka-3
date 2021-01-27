@@ -9,8 +9,8 @@ block content
           each article in articles
             li.notes__list-item
               time.notes__item-time(datetime=`${article.createdAt}`) #{formatDate(article.createdAt)}
-              a.notes__item-text(href='#') #{article.title}
-              button.notes__button.button.button--close-item(type='button')
+              a.notes__item-text(href=`/articles/edit/${article.id}`) #{article.title}
+              a.notes__button.button.button--close-item(href=`/articles/delete/${article.id}`)
                 span.visually-hidden Закрыть строку списка
         if pageList.length > 1 && articles.length !== 0
           .preview__toggle-wrapper

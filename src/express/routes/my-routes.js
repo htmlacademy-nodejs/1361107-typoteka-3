@@ -14,7 +14,7 @@ myRouter.get(
     catchAsync(async (req, res) => {
       const {user} = req.session;
       const page = Number(req.query.page) || 1;
-      const {count, rows: articles} = await api.getArticles();
+      const {count, rows: articles} = await api.getArticles(page);
       const maxPage = Math.ceil(count / PAGINATION_OFFSET);
       const pageList = getPageList(page, maxPage);
       res.render(`my`, {articles, formatDate, page, maxPage, pageList, user});
