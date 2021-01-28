@@ -29,14 +29,24 @@ block content
                     p #{`${comment.user.firstName} ${comment.user.lastName}`} •
                     time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt)}
                   p.comments__message #{comment.text}
-          .comments__footer.comments__footer--user
-            form(action=`/articles/${article.id}/comments`, method='POST')
-              .comments__avatar.avatar
-                img(src='/img/avatar-2.png', alt='аватар пользователя')
-              label
-                textarea(name='text', rows='1', placeholder=`${article.comments.length == 0 ? 'Начать обсуждение' : 'Присоединиться к обсуждению'}`) #{prevCommentData ? prevCommentData.text : ''}
-                if (errorDetails)
-                  each error in errorDetails.filter((el) => el.context.key === 'text')
-                    dive(style={color: 'red'}) - #{error.message}
-              button.comments__button.button.button--colored(type='submit') Опубликовать
+          if (user)
+            .comments__footer.comments__footer--user
+              form(action=`/articles/${article.id}/comments`, method='POST')
+                .comments__avatar.avatar
+                  img(src=`/img/${user.avatar}`, alt='аватар пользователя')
+                label
+                  textarea(name='text', rows='1', placeholder=`${article.comments.length == 0 ? 'Начать обсуждение' : 'Присоединиться к обсуждению'}`) #{prevCommentData ? prevCommentData.text : ''}
+                  if (errorDetails)
+                    each error in errorDetails.filter((el) => el.context.key === 'text')
+                      dive(style={color: 'red'}) - #{error.message}
+                button.comments__button.button.button--colored(type='submit') Опубликовать
+          else
+            .comments__footer.comments__footer--visitor
+              a.comments__button.button.button--colored(href="/login") Войти
+              .comments__registration
+                p.text.text--signature
+                  b.title.title--small Регистрация
+                  | Чтобы присоединиться к
+                  |                   переписке
+                  |                   нужно зарегистрироваться
   script(src='/js/main.js')
