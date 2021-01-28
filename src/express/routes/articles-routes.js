@@ -30,16 +30,16 @@ const upload = multer({storage});
 const articlesRouter = new Router();
 
 articlesRouter.get(
-    `/category/:id`,
+    `/category/:categoryId`,
     idValidator,
     catchAsync(async (req, res) => {
       const {user} = req.session;
       const page = Number(req.query.page) || 1;
-      const {id} = req.params;
-      const {count, articles} = await api.getArticlesByCategory(page, id);
+      const {categoryId} = req.params;
+      const {count, articles} = await api.getArticlesByCategory(page, categoryId);
       const categories = await api.getCategories();
       const searchedCategory = categories.find(
-          (category) => category.id === Number(id)
+          (category) => category.id === Number(categoryId)
       );
       const maxPage = Math.ceil(count / PAGINATION_OFFSET);
       const pageList = getPageList(page, maxPage);
@@ -73,13 +73,13 @@ articlesRouter.get(
 );
 
 articlesRouter.get(
-    `/edit/:id`,
+    `/edit/:articleId`,
     [adminRoute, idValidator],
     catchAsync(async (req, res) => {
       const {user} = req.session;
-      const {id} = req.params;
+      const {articleId} = req.params;
       const [article, categories] = await Promise.all([
-        api.getArticle(id),
+        api.getArticle(articleId),
         api.getCategories(),
       ]);
       res.render(`edit-article`, {article, categories, formatDate, user});
@@ -87,11 +87,11 @@ articlesRouter.get(
 );
 
 articlesRouter.post(
-    `/edit/:id`,
+    `/edit/:articleId`,
     [adminRoute, idValidator, upload.single(`picture`)],
     catchAsync(async (req, res) => {
       const {user} = req.session;
-      const {id} = req.params;
+      const {articleId} = req.params;
       const {body, file} = req;
       const articleData = {
         title: body.title,
@@ -109,12 +109,12 @@ articlesRouter.post(
         articleData.picture = file.filename;
       }
       try {
-        await api.updateArticle(id, articleData, user.email);
-        res.redirect(`/articles/${id}`);
+        await api.updateArticle(articleId, articleData, user.email);
+        res.redirect(`/articles/${articleId}`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
         const [article, categories] = await Promise.all([
-          api.getArticle(id),
+          api.getArticle(articleId),
           api.getCategories(),
         ]);
         res.render(`edit-article`, {
@@ -134,24 +134,26 @@ articlesRouter.post(
 );
 
 articlesRouter.get(
-    `/:id`,
+    `/:articleId`,
     idValidator,
     catchAsync(async (req, res) => {
-      const {id} = req.params;
+      const {articleId} = req.params;
       const {user} = req.session;
 
-      const article = await api.getArticle(id);
-      const categories = await api.getCategories();
+      const [article, categories] = await Promise.all([
+        api.getArticle(articleId),
+        api.getCategories(),
+      ]);
 
       res.render(`article`, {article, formatDate, categories, user});
     })
 );
 
 articlesRouter.post(
-    `/:id/comments`,
+    `/:articleId/comments`,
     idValidator,
     catchAsync(async (req, res) => {
-      const {id} = req.params;
+      const {articleId} = req.params;
       const {body} = req;
       const {user} = req.session;
       if (!user) {
@@ -166,11 +168,11 @@ articlesRouter.post(
         text: body.text,
       };
       try {
-        await api.createComment(id, commentData, user.email);
-        res.redirect(`/articles/${id}`);
+        await api.createComment(articleId, commentData, user.email);
+        res.redirect(`/articles/${articleId}`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
-        const article = await api.getArticle(id);
+        const article = await api.getArticle(articleId);
         res.render(`article`, {
           article,
           formatDate,
@@ -230,12 +232,12 @@ articlesRouter.get(
 );
 
 articlesRouter.get(
-    `/delete/:id`,
+    `/delete/:articleId`,
     [idValidator, adminRoute],
     catchAsync(async (req, res) => {
       const {user} = req.session;
-      const {id} = req.params;
-      await api.deleteArticle(id, user.email);
+      const {articleId} = req.params;
+      await api.deleteArticle(articleId, user.email);
       res.redirect(`/my`);
     })
 );
