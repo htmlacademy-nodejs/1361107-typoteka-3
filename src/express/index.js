@@ -15,6 +15,7 @@ const myRouter = require(`./routes/my-routes`);
 const articlesRouter = require(`./routes/articles-routes`);
 const searchRouter = require(`./routes/search-routes`);
 const categoriesRouter = require(`./routes/categories-routes`);
+const logoutRouter = require(`./routes/logout-routes`);
 const chalk = require(`chalk`);
 const config = require(`../config`);
 const {sequelize} = require(`../service/cli/server/db/db`);
@@ -52,6 +53,7 @@ app.use(`/my`, myRouter);
 app.use(`/articles`, articlesRouter);
 app.use(`/search`, searchRouter);
 app.use(`/categories`, categoriesRouter);
+app.use(`/logout`, logoutRouter);
 
 app.use((req, res) =>
   res
