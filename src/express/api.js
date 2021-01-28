@@ -71,6 +71,10 @@ class API {
     });
   }
 
+  async getComments(page) {
+    return this._load(`/articles/comments`, {params: {page}});
+  }
+
   async createUser(data) {
     return await this._load(`/user/signup`, {
       method: `POST`,

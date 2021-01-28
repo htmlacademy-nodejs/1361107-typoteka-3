@@ -133,7 +133,7 @@ exports.getSequelizeQueryOptions = (model, db) => {
       include: {
         model: db.User,
         as: `user`,
-        attributes: [`id`, `firstName`, `lastName`, `email`],
+        attributes: [`id`, `firstName`, `lastName`, `email`, `avatar`],
       },
     },
     User: {

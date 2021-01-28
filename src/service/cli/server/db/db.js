@@ -26,6 +26,7 @@ const ArticleCategories = require(`./models/article-categories`)(sequelize);
 User.hasMany(Comment, {
   foreignKey: `userId`,
   as: `comments`,
+  onDelete: `CASCADE`
 });
 Comment.belongsTo(User, {
   foreignKey: `userId`,
@@ -35,6 +36,7 @@ Comment.belongsTo(User, {
 Article.hasMany(Comment, {
   foreignKey: `articleId`,
   as: `comments`,
+  onDelete: `CASCADE`
 });
 Comment.belongsTo(Article, {
   foreignKey: `articleId`,

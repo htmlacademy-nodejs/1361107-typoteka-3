@@ -33,6 +33,15 @@ module.exports = (app, services) => {
   );
 
   route.get(
+      `/comments`,
+      catchAsync(async (req, res) => {
+        const page = Number(req.query.page) || 1;
+        const result = await commentsService.findAll(page);
+        return res.status(HttpCode.OK).json(result);
+      })
+  );
+
+  route.get(
       `/:articleId`,
       [idValidator, isArticleExists(articlesService)],
       (req, res) => {
@@ -86,7 +95,7 @@ module.exports = (app, services) => {
       catchAsync(async (req, res) => {
         const {article} = res.locals;
 
-        const comments = await commentsService.findAll(article);
+        const comments = await commentsService.findByArticle(article);
 
         return res.status(HttpCode.OK).json(comments);
       })
