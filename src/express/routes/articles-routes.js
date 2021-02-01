@@ -172,9 +172,13 @@ articlesRouter.post(
         res.redirect(`/articles/${articleId}`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
-        const article = await api.getArticle(articleId);
+        const [article, categories] = await Promise.all([
+          api.getArticle(articleId),
+          api.getCategories(),
+        ]);
         res.render(`article`, {
           article,
+          categories,
           formatDate,
           prevCommentData: {text: commentData.text},
           errorDetails,
