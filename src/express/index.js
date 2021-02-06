@@ -15,10 +15,30 @@ const myRouter = require(`./routes/my-routes`);
 const articlesRouter = require(`./routes/articles-routes`);
 const searchRouter = require(`./routes/search-routes`);
 const categoriesRouter = require(`./routes/categories-routes`);
+const logoutRouter = require(`./routes/logout-routes`);
 const chalk = require(`chalk`);
 const config = require(`../config`);
+const {sequelize} = require(`../service/cli/server/db/db`);
+const session = require(`express-session`);
+const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
+
+const mySessionStore = new SequelizeStore({
+  db: sequelize,
+  expiration: Number(config.EXPIRATION_TIME),
+  checkExpirationInterval: 60000,
+});
 
 const app = express();
+
+app.use(session({
+  secret: config.SESSION_SECRET,
+  store: mySessionStore,
+  resave: false,
+  saveUninitialized: false,
+  name: `session_id`,
+}));
+
+sequelize.sync({force: false});
 
 app.use(express.static(path.resolve(__dirname, DirPath.PUBLIC)));
 app.use(express.static(path.resolve(__dirname, DirPath.UPLOAD)));
@@ -33,6 +53,7 @@ app.use(`/my`, myRouter);
 app.use(`/articles`, articlesRouter);
 app.use(`/search`, searchRouter);
 app.use(`/categories`, categoriesRouter);
+app.use(`/logout`, logoutRouter);
 
 app.use((req, res) =>
   res

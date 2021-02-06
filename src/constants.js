@@ -116,7 +116,8 @@ exports.NewArticleMessage = {
   MAX_ANNOUNCE_LENGTH: `Анонс должен быть не больше 250 символов`,
   MAX_FULL_TEXT_LENGTH: `Описание должно быть не больше 1000 символов`,
   REQUIRED_FIELD: `Поле {#label} обязательно для заполнения`,
-  WRONG_CATEGORY: `Категория должна быть типа число`
+  WRONG_CATEGORY: `Категория должна быть типа число`,
+  MIN_CATEGORY_ARRAY_LENGTH: `Необходимо указать хотя бы одну категорию`,
 };
 
 exports.NewCommentMessage = {
@@ -138,3 +139,9 @@ exports.NewUserMessage = {
 exports.SALT_ROUNDS = 10;
 
 exports.UPLOAD_DIR = `../upload/img/`;
+
+exports.UserErrorMessage = {
+  USER_NOT_EXISTS: `Пользователя не существует`,
+  WRONG_DATA: `Неверный email или пароль`,
+  FORBIDDEN: `У вас нет прав на данное действие`
+};

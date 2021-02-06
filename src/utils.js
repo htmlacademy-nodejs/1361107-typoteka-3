@@ -108,13 +108,7 @@ exports.getCreatedDate = () => {
 exports.getSequelizeQueryOptions = (model, db) => {
   const options = {
     Article: {
-      attributes: {exclude: [`userId`]},
       include: [
-        {
-          model: db.User,
-          as: `owner`,
-          attributes: [`id`, `firstName`, `lastName`, `email`, `avatar`],
-        },
         {
           model: db.Comment,
           as: `comments`,
@@ -139,8 +133,11 @@ exports.getSequelizeQueryOptions = (model, db) => {
       include: {
         model: db.User,
         as: `user`,
-        attributes: [`id`, `firstName`, `lastName`, `email`],
+        attributes: [`id`, `firstName`, `lastName`, `email`, `avatar`],
       },
+    },
+    User: {
+      attributes: [`id`, `firstName`, `lastName`, `email`, `avatar`],
     }
   };
 

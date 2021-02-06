@@ -6,8 +6,14 @@ const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 const {formatDate, catchAsync, getPageList} = require(`../../utils`);
-const {PAGINATION_OFFSET, UPLOAD_DIR} = require(`../../constants`);
-const idValidator = require(`../middleware/id-validator`);
+const {
+  PAGINATION_OFFSET,
+  UPLOAD_DIR,
+  HttpCode,
+  UserErrorMessage,
+} = require(`../../constants`);
+const adminRoute = require(`../middleware/admin-route`);
+const idValidator = require(`../../service/cli/server/middleware/id-validator`);
 
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
@@ -24,14 +30,17 @@ const upload = multer({storage});
 const articlesRouter = new Router();
 
 articlesRouter.get(
-    `/category/:id`,
+    `/category/:categoryId`,
     idValidator,
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const page = Number(req.query.page) || 1;
-      const {id} = req.params;
-      const {count, articles} = await api.getArticlesByCategory(page, id);
+      const {categoryId} = req.params;
+      const {count, articles} = await api.getArticlesByCategory(page, categoryId);
       const categories = await api.getCategories();
-      const searchedCategory = categories.find((category) => category.id === Number(id));
+      const searchedCategory = categories.find(
+          (category) => category.id === Number(categoryId)
+      );
       const maxPage = Math.ceil(count / PAGINATION_OFFSET);
       const pageList = getPageList(page, maxPage);
       return res.render(`articles-by-category`, {
@@ -43,40 +52,46 @@ articlesRouter.get(
         count,
         categories,
         formatDate,
+        user,
       });
     })
 );
 
 articlesRouter.get(
     `/add`,
+    adminRoute,
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const categories = await api.getCategories();
       const [currentDate] = formatDate(new Date()).split(`,`);
       res.render(`new-article`, {
         categories,
         currentDate,
+        user,
       });
     })
 );
 
 articlesRouter.get(
-    `/edit/:id`,
-    idValidator,
+    `/edit/:articleId`,
+    [adminRoute, idValidator],
     catchAsync(async (req, res) => {
-      const {id} = req.params;
+      const {user} = req.session;
+      const {articleId} = req.params;
       const [article, categories] = await Promise.all([
-        api.getArticle(id),
+        api.getArticle(articleId),
         api.getCategories(),
       ]);
-      res.render(`edit-article`, {article, categories, formatDate});
+      res.render(`edit-article`, {article, categories, formatDate, user});
     })
 );
 
 articlesRouter.post(
-    `/edit/:id`,
-    [idValidator, upload.single(`picture`)],
+    `/edit/:articleId`,
+    [adminRoute, idValidator, upload.single(`picture`)],
     catchAsync(async (req, res) => {
-      const {id} = req.params;
+      const {user} = req.session;
+      const {articleId} = req.params;
       const {body, file} = req;
       const articleData = {
         title: body.title,
@@ -94,12 +109,12 @@ articlesRouter.post(
         articleData.picture = file.filename;
       }
       try {
-        await api.updateArticle(id, articleData);
-        res.redirect(`/articles/${id}`);
+        await api.updateArticle(articleId, articleData, user.email);
+        res.redirect(`/articles/${articleId}`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
         const [article, categories] = await Promise.all([
-          api.getArticle(id),
+          api.getArticle(articleId),
           api.getCategories(),
         ]);
         res.render(`edit-article`, {
@@ -112,45 +127,62 @@ articlesRouter.post(
           formatDate,
           categories,
           errorDetails,
+          user,
         });
       }
     })
 );
 
 articlesRouter.get(
-    `/:id`,
+    `/:articleId`,
     idValidator,
     catchAsync(async (req, res) => {
-      const {id} = req.params;
+      const {articleId} = req.params;
+      const {user} = req.session;
 
-      const article = await api.getArticle(id);
-      const categories = await api.getCategories();
+      const [article, categories] = await Promise.all([
+        api.getArticle(articleId),
+        api.getCategories(),
+      ]);
 
-      res.render(`article`, {article, formatDate, categories});
+      res.render(`article`, {article, formatDate, categories, user});
     })
 );
 
 articlesRouter.post(
-    `/:id/comments`,
+    `/:articleId/comments`,
     idValidator,
     catchAsync(async (req, res) => {
-      const {id} = req.params;
+      const {articleId} = req.params;
       const {body} = req;
+      const {user} = req.session;
+      if (!user) {
+        res.status(HttpCode.FORBIDDEN).render(`errors/400`, {
+          statusCode: HttpCode.FORBIDDEN,
+          message: UserErrorMessage.FORBIDDEN,
+        });
+        return;
+      }
       const commentData = {
-        userId: 1,
+        userId: user.id,
         text: body.text,
       };
       try {
-        await api.createComment(id, commentData);
-        res.redirect(`/articles/${id}`);
+        await api.createComment(articleId, commentData, user.email);
+        res.redirect(`/articles/${articleId}`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
-        const article = await api.getArticle(id);
+        const [article, categories] = await Promise.all([
+          api.getArticle(articleId),
+          api.getCategories(),
+        ]);
         res.render(`article`, {
           article,
+          categories,
           formatDate,
           prevCommentData: {text: commentData.text},
           errorDetails,
+          user,
         });
       }
     })
@@ -158,15 +190,15 @@ articlesRouter.post(
 
 articlesRouter.post(
     `/add`,
-    upload.single(`picture`),
+    [adminRoute, upload.single(`picture`)],
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const {body, file} = req;
       const articleData = {
         title: body.title,
         announce: body.announce,
         fullText: body.fullText,
         categories: body.categories || [],
-        userId: 1,
       };
       if (file) {
         articleData.picture = file.filename;
@@ -175,7 +207,7 @@ articlesRouter.post(
         articleData.categories = [articleData.categories];
       }
       try {
-        await api.createArticle(articleData);
+        await api.createArticle(articleData, user.email);
         res.redirect(`/my`);
       } catch (error) {
         const {details: errorDetails} = error.response.data.error;
@@ -186,8 +218,31 @@ articlesRouter.post(
           currentDate,
           prevArticleData: articleData,
           errorDetails,
+          user,
         });
       }
+    })
+);
+
+articlesRouter.get(
+    `/:articleId/delete-comment/:commentId`,
+    [idValidator, adminRoute],
+    catchAsync(async (req, res) => {
+      const {user} = req.session;
+      const {articleId, commentId} = req.params;
+      await api.deleteComment(articleId, commentId, user.email);
+      res.redirect(`/my/comments`);
+    })
+);
+
+articlesRouter.get(
+    `/delete/:articleId`,
+    [idValidator, adminRoute],
+    catchAsync(async (req, res) => {
+      const {user} = req.session;
+      const {articleId} = req.params;
+      await api.deleteArticle(articleId, user.email);
+      res.redirect(`/my`);
     })
 );
 

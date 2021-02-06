@@ -5,11 +5,10 @@ const config = require(`../config`);
 const {DEFAULT_API_PORT} = require(`../constants`);
 
 class API {
-
   constructor(baseURL, timeout) {
     this._http = axios.create({
       baseURL,
-      timeout
+      timeout,
     });
   }
 
@@ -30,10 +29,13 @@ class API {
     return await this._load(`/articles/${id}`);
   }
 
-  async updateArticle(articleId, data) {
+  async updateArticle(articleId, data, userEmail) {
     return this._load(`/articles/${articleId}`, {
       method: `PUT`,
-      data
+      data,
+      params: {
+        userEmail
+      }
     });
   }
 
@@ -49,24 +51,59 @@ class API {
     return this._load(`/categories/${id}`);
   }
 
-  async createArticle(data) {
+  async createArticle(data, userEmail) {
     return this._load(`/articles`, {
       method: `POST`,
-      data
+      data,
+      params: {
+        userEmail
+      }
     });
   }
 
-  async createComment(articleId, data) {
+  async createComment(articleId, data, userEmail) {
     return this._load(`/articles/${articleId}/comments`, {
       method: `POST`,
-      data
+      data,
+      params: {
+        userEmail
+      }
     });
+  }
+
+  async getComments(page) {
+    return this._load(`/articles/comments`, {params: {page}});
   }
 
   async createUser(data) {
-    return await this._load(`/user`, {
+    return await this._load(`/user/signup`, {
       method: `POST`,
-      data
+      data,
+    });
+  }
+
+  async loginUser(data) {
+    return await this._load(`/user/login`, {
+      method: `POST`,
+      data,
+    });
+  }
+
+  async deleteArticle(articleId, userEmail) {
+    return this._load(`/articles/${articleId}`, {
+      method: `DELETE`,
+      params: {
+        userEmail
+      },
+    });
+  }
+
+  async deleteComment(articleId, commentId, userEmail) {
+    return this._load(`/articles/${articleId}/comments/${commentId}`, {
+      method: `DELETE`,
+      params: {
+        userEmail
+      },
     });
   }
 }
@@ -80,5 +117,5 @@ const defaultAPI = new API(defaultUrl, TIMEOUT);
 
 module.exports = {
   API,
-  getAPI: () => defaultAPI
+  getAPI: () => defaultAPI,
 };

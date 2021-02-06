@@ -11,6 +11,7 @@ searchRouter.get(
     `/`,
     catchAsync(async (req, res) => {
       let {page, search} = req.query;
+      const {user} = req.session;
       page = Number(page) || 1;
       try {
         const {count, articles: results} = await api.search(search, page);
@@ -22,13 +23,15 @@ searchRouter.get(
           pageList,
           results,
           search,
-          formatDate
+          formatDate,
+          user,
         });
       } catch (error) {
         res.render(`search`, {
           results: [],
           search,
-          formatDate
+          formatDate,
+          user,
         });
       }
     })

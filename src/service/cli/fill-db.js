@@ -1,14 +1,14 @@
 "use strict";
 
-const {nanoid} = require(`nanoid`);
+const bcrypt = require(`bcrypt`);
 const {
   ExitCode,
   MAX_PUBLICATION_AMOUNT,
   DEFAULT_PUBLICATION_AMOUNT,
   DataFileName,
-  MAX_ID_LENGTH,
   CommentRestrict,
   ArticleRestrict,
+  SALT_ROUNDS,
 } = require(`../../constants`);
 const {
   readContent,
@@ -52,16 +52,22 @@ module.exports = {
 
     const userList = Array(count)
       .fill({}, 0, count)
-      .map(() => {
-        return {
+      .map((_el, index) => {
+        const user = {
           firstName: shuffle(firstNames)[
             getRandomInt(0, firstNames.length - 1)
           ],
           lastName: shuffle(lastNames)[getRandomInt(0, firstNames.length - 1)],
-          email: `${nanoid(MAX_ID_LENGTH)}@mail.ru`,
-          password: `password`,
+          email: `email${index}@mail.ru`,
+          password: bcrypt.hashSync(`password`, SALT_ROUNDS),
           avatar: getAvatar(),
         };
+
+        if (index === 0) {
+          user.isAdmin = true;
+        }
+
+        return user;
       });
 
     const articleList = Array(count)

@@ -10,6 +10,7 @@ const mainRouter = new Router();
 mainRouter.get(
     `/`,
     catchAsync(async (req, res) => {
+      const {user} = req.session;
       const page = Number(req.query.page) || 1;
       const {count, rows: articles} = await api.getArticles(page);
       const categories = await api.getCategories();
@@ -22,6 +23,7 @@ mainRouter.get(
         articles,
         formatDate,
         categories,
+        user,
       });
     })
 );

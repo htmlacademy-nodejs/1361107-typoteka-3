@@ -10,9 +10,16 @@ const newCommentSchema = require(`../schemas/new-comment`);
 const updateArticleSchema = require(`../schemas/update-article`);
 const idValidator = require(`../middleware/id-validator`);
 const isCategoryExists = require(`../middleware/is-category-exists`);
+const isAdmin = require(`../middleware/is-admin`);
+const checkUser = require(`../middleware/check-user`);
 
 module.exports = (app, services) => {
-  const {articlesService, commentsService, categoryService} = services;
+  const {
+    articlesService,
+    commentsService,
+    categoryService,
+    usersService,
+  } = services;
 
   const route = new Router();
 
@@ -21,6 +28,15 @@ module.exports = (app, services) => {
       catchAsync(async (req, res) => {
         const page = Number(req.query.page) || 1;
         const result = await articlesService.findAll(page);
+        return res.status(HttpCode.OK).json(result);
+      })
+  );
+
+  route.get(
+      `/comments`,
+      catchAsync(async (req, res) => {
+        const page = Number(req.query.page) || 1;
+        const result = await commentsService.findAll(page);
         return res.status(HttpCode.OK).json(result);
       })
   );
@@ -37,7 +53,7 @@ module.exports = (app, services) => {
 
   route.post(
       `/`,
-      schemaValidator(newArticleSchema),
+      [isAdmin(usersService), schemaValidator(newArticleSchema)],
       catchAsync(async (req, res) => {
         const newArticle = await articlesService.create(req.body);
 
@@ -51,6 +67,7 @@ module.exports = (app, services) => {
         idValidator,
         schemaValidator(updateArticleSchema),
         isArticleExists(articlesService),
+        isAdmin(usersService),
       ],
       catchAsync(async (req, res) => {
         const {articleId} = req.params;
@@ -62,7 +79,7 @@ module.exports = (app, services) => {
 
   route.delete(
       `/:articleId`,
-      idValidator,
+      [idValidator, isAdmin(usersService)],
       catchAsync(async (req, res) => {
         const {articleId} = req.params;
 
@@ -78,7 +95,7 @@ module.exports = (app, services) => {
       catchAsync(async (req, res) => {
         const {article} = res.locals;
 
-        const comments = await commentsService.findAll(article);
+        const comments = await commentsService.findByArticle(article);
 
         return res.status(HttpCode.OK).json(comments);
       })
@@ -86,7 +103,7 @@ module.exports = (app, services) => {
 
   route.delete(
       `/:articleId/comments/:commentId`,
-      [idValidator, isArticleExists(articlesService)],
+      [idValidator, isArticleExists(articlesService), isAdmin(usersService)],
       catchAsync(async (req, res) => {
         const {article} = res.locals;
         const {commentId} = req.params;
@@ -103,6 +120,7 @@ module.exports = (app, services) => {
         idValidator,
         schemaValidator(newCommentSchema),
         isArticleExists(articlesService),
+        checkUser(usersService),
       ],
       catchAsync(async (req, res) => {
         const {article} = res.locals;

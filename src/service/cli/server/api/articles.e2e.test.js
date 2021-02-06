@@ -6,7 +6,12 @@ const request = require(`supertest`);
 const articles = require(`./articles`);
 const {HttpCode} = require(`../../../../constants`);
 const {mockDb, sequelize, initAndFillMockDb} = require(`../db/mock-db`);
-const {CategoryService, CommentsService, ArticlesService} = require(`../data-service`);
+const {
+  CategoryService,
+  CommentsService,
+  ArticlesService,
+  UsersService,
+} = require(`../data-service`);
 
 const app = express();
 app.use(express.json());
@@ -14,6 +19,7 @@ articles(app, {
   articlesService: new ArticlesService(mockDb),
   commentsService: new CommentsService(mockDb),
   categoryService: new CategoryService(mockDb),
+  usersService: new UsersService(mockDb),
 });
 
 describe(`/articles route works correctly:`, () => {
@@ -30,7 +36,6 @@ describe(`/articles route works correctly:`, () => {
     announce: `Программировать не настолько сложно, как об этом говорят. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле?`,
     fullText: `Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравится только игры.`,
     categories: [1],
-    userId: 1,
   };
 
   const updateArticleData = {
@@ -39,7 +44,13 @@ describe(`/articles route works correctly:`, () => {
 
   const mockNewComment = {
     text: `Новый комментарий, очень крутой комментарий!`,
-    userId: 1,
+    userId: 2,
+  };
+
+  const UserEmail = {
+    ADMIN: `email0@mail.ru`,
+    USER: `email1@mail.ru`,
+    WRONG: `wrong@mail.ru`,
   };
 
   describe(`/articles GET request`, () => {
@@ -148,7 +159,10 @@ describe(`/articles route works correctly:`, () => {
 
     beforeEach(async () => {
       await initAndFillMockDb();
-      response = await request(app).post(`/articles`).send(mockNewArticle);
+      response = await request(app)
+        .post(`/articles`)
+        .query({userEmail: UserEmail.ADMIN})
+        .send(mockNewArticle);
     });
 
     test(`returns 201 status code`, () =>
@@ -161,8 +175,18 @@ describe(`/articles route works correctly:`, () => {
   });
 
   describe(`/articles wrong POST request`, () => {
+    let response;
+
     beforeEach(async () => {
       await initAndFillMockDb();
+    });
+
+    test(`returns 403 status code if user is not admin`, async () => {
+      response = await request(app)
+        .post(`/articles`)
+        .query({userEmail: UserEmail.USER})
+        .send(mockNewArticle);
+      expect(response.statusCode).toBe(HttpCode.FORBIDDEN);
     });
   });
 
@@ -171,7 +195,10 @@ describe(`/articles route works correctly:`, () => {
 
     beforeEach(async () => {
       await initAndFillMockDb();
-      response = await request(app).put(`/articles/1`).send(updateArticleData);
+      response = await request(app)
+        .put(`/articles/1`)
+        .query({userEmail: UserEmail.ADMIN})
+        .send(updateArticleData);
     });
 
     test(`returns 200 status code`, () =>
@@ -205,6 +232,14 @@ describe(`/articles route works correctly:`, () => {
         .send(updateArticleData);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
+
+    test(`returns 403 status code if user is not admin`, async () => {
+      response = await request(app)
+        .put(`/articles/1`)
+        .query({userEmail: UserEmail.USER})
+        .send(updateArticleData);
+      expect(response.statusCode).toBe(HttpCode.FORBIDDEN);
+    });
   });
 
   describe(`/articles/:articleId DELETE request`, () => {
@@ -212,7 +247,9 @@ describe(`/articles route works correctly:`, () => {
 
     beforeEach(async () => {
       await initAndFillMockDb();
-      response = await request(app).delete(`/articles/1`);
+      response = await request(app)
+        .delete(`/articles/1`)
+        .query({userEmail: UserEmail.ADMIN});
     });
 
     test(`returns 204 status code`, () =>
@@ -232,13 +269,24 @@ describe(`/articles route works correctly:`, () => {
     });
 
     test(`returns 204 status code anyway even when article does not exist`, async () => {
-      response = await request(app).delete(`/articles/999`);
+      response = await request(app)
+        .delete(`/articles/999`)
+        .query({userEmail: UserEmail.ADMIN});
       expect(response.statusCode).toBe(HttpCode.NO_CONTENT);
     });
 
     test(`returns 400 status code if articleId is invalid`, async () => {
-      response = await request(app).delete(`/articles/invalid-id`);
+      response = await request(app)
+        .delete(`/articles/invalid-id`)
+        .query({userEmail: UserEmail.ADMIN});
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`returns 403 status code if user is not admin`, async () => {
+      response = await request(app)
+        .delete(`/articles/1`)
+        .query({userEmail: UserEmail.USER});
+      expect(response.statusCode).toBe(HttpCode.FORBIDDEN);
     });
   });
 
@@ -264,6 +312,7 @@ describe(`/articles route works correctly:`, () => {
       await initAndFillMockDb();
       response = await request(app)
         .post(`/articles/1/comments`)
+        .query({userEmail: UserEmail.USER})
         .send(mockNewComment);
     });
 
@@ -275,7 +324,6 @@ describe(`/articles route works correctly:`, () => {
       const responseAfterCreation = await request(app).get(
           `/articles/1/comments`
       );
-
       expect(responseAfterCreation.body[2].text).toBe(
           `Новый комментарий, очень крутой комментарий!`
       );
@@ -309,6 +357,14 @@ describe(`/articles route works correctly:`, () => {
       });
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
+
+    test(`returns 403 status code if email is wrong`, async () => {
+      response = await request(app)
+        .post(`/articles/1/comments`)
+        .query({userEmail: UserEmail.WRONG})
+        .send(mockNewComment);
+      expect(response.statusCode).toBe(HttpCode.FORBIDDEN);
+    });
   });
 
   describe(`/articles/:articleId/comments/:commentId DELETE request`, () => {
@@ -316,7 +372,9 @@ describe(`/articles route works correctly:`, () => {
 
     beforeEach(async () => {
       await initAndFillMockDb();
-      response = await request(app).delete(`/articles/1/comments/1`);
+      response = await request(app)
+        .delete(`/articles/1/comments/1`)
+        .query({userEmail: UserEmail.ADMIN});
     });
 
     test(`returns 204 status code`, () =>
@@ -353,8 +411,17 @@ describe(`/articles route works correctly:`, () => {
     });
 
     test(`returns 204 status code if a comment does not exist`, async () => {
-      response = await request(app).delete(`/articles/1/comments/999`);
+      response = await request(app)
+        .delete(`/articles/1/comments/999`)
+        .query({userEmail: UserEmail.ADMIN});
       expect(response.statusCode).toBe(HttpCode.NO_CONTENT);
+    });
+
+    test(`returns 403 status code if user is not admin`, async () => {
+      response = await request(app)
+        .delete(`/articles/1/comments/1`)
+        .query({userEmail: UserEmail.USER});
+      expect(response.statusCode).toBe(HttpCode.FORBIDDEN);
     });
   });
 });

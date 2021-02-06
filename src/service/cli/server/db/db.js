@@ -23,18 +23,10 @@ const Article = require(`./models/article`)(sequelize);
 const User = require(`./models/user`)(sequelize);
 const ArticleCategories = require(`./models/article-categories`)(sequelize);
 
-User.hasMany(Article, {
-  foreignKey: `userId`,
-  as: `articles`,
-});
-Article.belongsTo(User, {
-  foreignKey: `userId`,
-  as: `owner`,
-});
-
 User.hasMany(Comment, {
   foreignKey: `userId`,
   as: `comments`,
+  onDelete: `CASCADE`
 });
 Comment.belongsTo(User, {
   foreignKey: `userId`,
@@ -44,6 +36,7 @@ Comment.belongsTo(User, {
 Article.hasMany(Comment, {
   foreignKey: `articleId`,
   as: `comments`,
+  onDelete: `CASCADE`
 });
 Comment.belongsTo(Article, {
   foreignKey: `articleId`,

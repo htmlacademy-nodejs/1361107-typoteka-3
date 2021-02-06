@@ -16,12 +16,18 @@ block content
           li.popup__tab.popup__tab--active.popup__tab--log-in
             button.popup__tab-switcher.button(type='button') Войти
         .popup__form.popup__form--active.form.form--log-in
-          form(action='#', method='get')
+          form(action='/login', method='post')
             .form__field
               label
-                input(type='email', placeholder='Электронная почта', required='')
+                input(type='email', placeholder='Электронная почта', name='email', value=prevUserEmail || '', required='')
+            if (errorDetails)
+              each error in errorDetails.filter((el) => el.context.key === 'email')
+                div(style={color: 'red'}) - #{error.message}
             .form__field
               label
-                input(type='password', placeholder='Пароль', required='')
+                input(type='password', placeholder='Пароль', name='password', required='')
+            if (errorDetails)
+              each error in errorDetails.filter((el) => el.context.key === 'password')
+                div(style={color: 'red'}) - #{error.message}
             button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
       .modal__overlay
